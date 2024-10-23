@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { FaUser, FaShoppingCart, FaBars } from "react-icons/fa";
-import logo from "../assets/munoz-logo.jpg";
+import logo from "../assets/logo_ch.png";
 import { useAuth } from "../context/authContext"; // Importa el contexto de autenticación
 
 function Navbar() {
@@ -21,29 +21,53 @@ function Navbar() {
   };
 
   return (
-    <nav className="bg-yellow-300 border-b-2 rounded-lg border-gray-200 fixed top-0 w-full z-50 pb-4">
+    <nav className="bg-white border-b-2 rounded-lg border-gray-200 fixed top-0 w-full z-10 pb-1">
+      <div className="bg-gradient-to-r from-pink-500 to-pink-800 text-black py-1 text-center font-semibold">
+        Aprovecha Envío Gratis!!!!!! Compra ahora y obtén envíos gratis hasta el 31 de Diciembre
+      </div>
       <div className="container mx-auto flex justify-between items-center py-2">
         <div className="flex items-center">
           <Link href={"/"}>
-            <Image src={logo} alt="Muñoz Logo" width={120} height={120} />
+            <Image src={logo} alt="Logo" width={100} height={160} />
           </Link>
-          <p className="ml-4 text-base text-gray-900">
-            La Pieza Exacta para Cada Necesidad
-          </p>
         </div>
-
-        <div className="text-center">
-          <p className="text-sm text-black font-semibold">
-            GRANDES DESCUENTOS Y PROMOCIONES DE TEMPORADA AQUÍ
-          </p>
+        <div className="flex items-center space-x-2 text-gray-800 hover:text-pink-700">
+          <Link href="/acercadenosotros" className="flex items-center space-x-2">
+            <span>Acerca de nosotros</span>
+          </Link>
         </div>
-
+        <div className="flex items-center space-x-2 text-gray-800 hover:text-pink-700">
+          <Link href="/servicios" className="flex items-center space-x-2">
+            <span>servicios</span>
+          </Link>
+        </div>
+        <div className="flex items-center space-x-2 text-gray-800 hover:text-pink-700">
+          <Link href="/contactanos" className="flex items-center space-x-2">
+            <span>Contactanos</span>
+          </Link>
+        </div>
+        <div className="flex items-center space-x-2 text-gray-800 hover:text-pink-700">
+          <Link href="/politicas" className="flex items-center space-x-2">
+            <span>politicas</span>
+          </Link>
+        </div>
+        <div className="flex items-center space-x-2 text-gray-800 hover:text-pink-700">
+          <Link href="/catalogo" className="flex items-center space-x-2">
+            <span>Catalogo</span>
+          </Link>
+        </div>
+        <div className="flex items-center space-x-2 text-gray-800 hover:text-pink-700">
+            <Link href="/cart" className="flex items-center space-x-2">
+              <FaShoppingCart className="w-6 h-6 cursor-pointer" />
+              <span>Carrito</span>
+            </Link>
+          </div>
         {/* Usuario, Carrito y menú hamburguesa a la derecha */}
         <div className="flex items-center space-x-4">
           <div className="relative">
             <button
               onClick={toggleDropdown}
-              className="flex items-center space-x-2 text-gray-700 hover:text-green-700"
+              className="flex items-center space-x-2 text-gray-700 hover:text-pink-700"
             >
               <FaUser className="w-6 h-6" />
               <span>
@@ -64,19 +88,19 @@ function Navbar() {
                 />
               </svg>
             </button>
-            
+
             {/* Dropdown */}
             {dropdownOpen && (
               <div className="absolute right-0 mt-2 w-64 bg-white shadow-lg rounded-lg py-4 z-50">
                 {!isAuthenticated ? (
                   <div className="flex justify-around items-center pb-4 border-b">
                     <Link href="/login">
-                      <p className="bg-transparent border border-gray-500 text-gray-500 hover:bg-gray-100 hover:text-green-700 px-4 py-2 rounded-lg">
+                      <p className="bg-pink-700 text-white hover:bg-pink-500 px-4 py-2 rounded-lg">
                         Ingresar
                       </p>
                     </Link>
                     <Link href="/register">
-                      <p className="bg-green-700 text-white hover:bg-green-600 px-4 py-2 rounded-lg">
+                      <p className="bg-pink-700 text-white hover:bg-pink-500 px-4 py-2 rounded-lg">
                         Crear Cuenta
                       </p>
                     </Link>
@@ -85,7 +109,7 @@ function Navbar() {
                   <div className="px-4 py-2">
                     <p className="text-sm">¡Hola, {user?.name}!</p>
                     <Link href="/profile">
-                      <p className="mt-2 text-green-700 hover:text-green-500">
+                      <p className="mt-2 text-pink-700 hover:text-pink-500">
                         Ver perfil
                       </p>
                     </Link>
@@ -99,23 +123,6 @@ function Navbar() {
                 )}
               </div>
             )}
-          </div>
-
-          <div className="flex items-center space-x-2 text-gray-800 hover:text-green-700">
-            <Link href="/cart" className="flex items-center space-x-2">
-              <FaShoppingCart className="w-6 h-6 cursor-pointer" />
-              <span>Carrito</span>
-            </Link>
-          </div>
-
-          <div className="flex items-center space-x-2 text-gray-800 hover:text-green-700">
-            <button
-              onClick={toggleMenu}
-              className="text-gray-800 hover:text-green-700 flex items-center space-x-2"
-            >
-              <span>Menú</span>
-              <FaBars className="w-6 h-6" />
-            </button>
           </div>
         </div>
       </div>

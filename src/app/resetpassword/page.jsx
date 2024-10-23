@@ -66,7 +66,7 @@ function RequestPasswordResetPage() {
 
           <button
             type="submit"
-            className="w-full bg-green-700 text-white py-2 px-4 rounded-lg hover:bg-green-600"
+            className="w-full bg-pink-700 text-white py-2 px-4 rounded-lg hover:bg-pink-500"
           >
             Enviar enlace de restablecimiento
           </button>

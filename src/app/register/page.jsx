@@ -231,18 +231,18 @@ function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen flex pt-28">
+    <div className="min-h-screen flex items-center justify-center bg-gray-100">
       {/* Sección izquierda: Formulario */}
-      <div className="w-full md:w-1/2 flex flex-col justify-center items-center bg-white p-8">
-        <div className="w-full max-w-md">
+      <div className="w-full max-w-md bg-white p-8 shadow-lg rounded-lg mt-40">
+        <div className="mb-4">
           <Link href="/">
-            <p className="text-green-700 font-bold mb-6 block">&larr; Atrás</p>
+            <p className="text-pink-700 font-bold mb-6 block">&larr; Atrás</p>
           </Link>
 
           {/* Logo */}
           <div className="text-center mb-8"></div>
 
-          <h2 className="text-2xl font-bold mb-4">Crea tu cuenta</h2>
+          <h2 className="text-2xl font-bold mb-8 text-center text-gray-900">Crea tu cuenta</h2>
 
           {/* El formulario ahora ejecuta la función onSubmit */}
           <form onSubmit={onSubmit}>
@@ -324,11 +324,11 @@ function RegisterPage() {
             {/* Pregunta Secreta */}
             <div className="mb-4">
               <label className="block text-gray-700">Pregunta Secreta</label>
-                <select
-                  value={preguntaSecreta}
-                  onChange={(e) => setPreguntaSecreta(e.target.value)}
-                  className="w-full border border-gray-300 p-2 rounded-lg"
-                >
+              <select
+                value={preguntaSecreta}
+                onChange={(e) => setPreguntaSecreta(e.target.value)}
+                className="w-full border border-gray-300 p-2 rounded-lg"
+              >
                 <option value="¿Cuál es el nombre de tu primera mascota?">
                   ¿Cuál es el nombre de tu primera mascota?
                 </option>
@@ -396,9 +396,8 @@ function RegisterPage() {
                 placeholder="Confirmar Contraseña"
                 value={confirmPassword}
                 onChange={handleConfirmPasswordChange}
-                className={`w-full border p-2 rounded-lg ${
-                  passwordMatch ? "border-gray-300" : "border-red-500"
-                }`}
+                className={`w-full border p-2 rounded-lg ${passwordMatch ? "border-gray-300" : "border-red-500"
+                  }`}
               />
               <button
                 type="button"
@@ -457,7 +456,7 @@ function RegisterPage() {
 
             <div className="mb-4">
               <ReCAPTCHA
-                sitekey="6LdpXWgqAAAAAOWwGI-kkrTyOLqKggmeO4D4RxY8"
+                sitekey="6Le0l2kqAAAAACYJHrkCQ6HwJrxjWSuj9e6NxIvY"
                 onChange={handleRecaptchaChange}
               />
             </div>
@@ -465,70 +464,27 @@ function RegisterPage() {
             {/* Botón de Crear Cuenta */}
             <button
               type="submit"
-              className={`w-full py-2 px-4 rounded-lg ${
-                passwordMatch && recaptchaToken && !onSubmitLoading
-                  ? "bg-green-700"
-                  : "bg-gray-400"
-              } text-white hover:bg-green-600`}
+              className={`w-full py-2 px-4 rounded-lg ${passwordMatch && recaptchaToken && !onSubmitLoading
+                  ? "bg-pink-400"
+                  : "bg-pink-700"
+                } text-white hover:bg-pink-500`}
               disabled={!passwordMatch || !recaptchaToken || onSubmitLoading} // Deshabilitar cuando está cargando
             >
               {onSubmitLoading ? "Cargando..." : "Crear Cuenta"}
             </button>
 
-            {/* Términos y Condiciones */}
-            <span className="text-xs text-gray-500 mt-4">
-              Al dar clic en Crear Cuenta aceptas nuestros{" "}
-              <Link href="/terminos">
-                <p className="text-green-700">Términos y Condiciones</p>
-              </Link>{" "}
-              y nuestra{" "}
-              <Link href="/privacidad">
-                <p className="text-green-700">Política de Privacidad</p>
+            <span className="text-xs text-black mt-4 block text-center">
+              ¿Ya tienes una cuenta?{" "}
+              <Link href="/login">
+                <p className="text-blue-700 inline">
+                  Ingresa Aquí
+                </p>
               </Link>
-              .
             </span>
           </form>
         </div>
       </div>
-
       {/* Sección derecha: Beneficios */}
-      <div
-        className="hidden md:block md:w-1/2 bg-cover bg-center"
-        style={{
-          backgroundImage: "url('/public/images/logos/fondo-munoz.png')",
-        }}
-      >
-        <div className="flex flex-col justify-center h-full text-white p-8 bg-green-700 bg-opacity-80">
-          <h2 className="text-3xl font-bold mb-4">
-            Beneficios de ser Usuario:
-          </h2>
-          <ul className="space-y-4">
-            <li className="flex items-center space-x-2">
-              <span>Recibe las mejores promociones</span>
-            </li>
-            <li className="flex items-center space-x-2">
-              <span>Ubicanos cerca de tu domicilio</span>
-            </li>
-            <li className="flex items-center space-x-2">
-              <span>
-                Encuentra todos los productos que le quedan a tu vehículo
-              </span>
-            </li>
-            <li className="flex items-center space-x-2">
-              <span>Atención personalizada</span>
-            </li>
-          </ul>
-
-          <span className="mt-4">
-            ¿Ya tienes una cuenta?{" "}
-            <Link href="/login">
-              <p className="text-yellow-200 text-lg hover:text-amber-300">
-                Ingresa Aquí
-              </p>
-            </Link>
-          </span>
-        </div>
-      </div>
     </div>
   );
 }

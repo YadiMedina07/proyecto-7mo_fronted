@@ -9,11 +9,11 @@ import {
   FaInstagram,
 } from "react-icons/fa"; // Importamos los íconos
 import Image from "next/image";
-import logo from "../assets/munoz-logo.jpg";
+import logo from "../assets/logo_ch.png";
 
 function Footer() {
   return (
-    <footer className="bg-gray-900 text-white py-8">
+    <footer className="bg-gray-500 text-white py-8">
       <div className="container mx-auto">
         <div className="flex justify-center space-x-6 py-4">
           <Image src={logo} alt="Muñoz Logo" width={120} height={120} />
@@ -32,19 +32,19 @@ function Footer() {
             <ul className="space-y-2">
               <li>
                 <Link href="/ubicaciones">
-                  <p className="hover:text-green-700 text-lg">Ubicacion</p>
+                  <p className="hover:text-pink-700 text-lg">Ubicacion</p>
                 </Link>
               </li>
               <li>
                 <Link href="/marca">
-                  <p className="hover:text-green-700 text-lg">
+                  <p className="hover:text-pink-700 text-lg">
                     Busca por Marca
                   </p>
                 </Link>
               </li>
               <li>
                 <Link href="/modelo">
-                  <p className="hover:text-green-700 text-lg">
+                  <p className="hover:text-pink-700 text-lg">
                     Busca por Modelo
                   </p>
                 </Link>
@@ -57,21 +57,21 @@ function Footer() {
             <ul className="space-y-2">
               <li>
                 <Link href="/nosotros">
-                  <p className="hover:text-green-700 text-lg">
-                    Acerca de Muñoz AutoPartes
+                  <p className="hover:text-pink-700 text-lg">
+                    Acerca de nosotros
                   </p>
                 </Link>
               </li>
               <li>
                 <Link href="/politicas">
-                  <p className="hover:text-green-700 text-lg">
+                  <p className="hover:text-pink-700 text-lg">
                     Politicas de Privacidad
                   </p>
                 </Link>
               </li>
               <li>
                 <Link href="/terminos&condiciones">
-                  <p className="hover:text-green-700 text-lg">
+                  <p className="hover:text-pink-700 text-lg">
                     Terminos y Condiciones
                   </p>
                 </Link>
@@ -82,20 +82,13 @@ function Footer() {
             <h3 className="font-bold mb-4 text-lg">SERVICIO AL CLIENTE</h3>
             <ul className="space-y-2">
               <li>
-                <Link href="/factura">
-                  <p className="hover:text-green-700 text-lg">
-                    Facturación Electrónica
-                  </p>
-                </Link>
-              </li>
-              <li>
                 <Link href="/contactos">
-                  <p className="hover:text-green-700 text-lg">Contáctanos</p>
+                  <p className="hover:text-pink-700 text-lg">Contáctanos</p>
                 </Link>
               </li>
               <li>
                 <Link href="/faq">
-                  <p className="hover:text-green-700 text-lg">
+                  <p className="hover:text-pink-700 text-lg">
                     Preguntas frecuentes
                   </p>
                 </Link>

@@ -5,44 +5,30 @@ function HomePage() {
   const productos = [
     {
       id: 1,
-      nombre: 'Batería para auto',
-      descripcion: 'Batería de alto rendimiento para cualquier tipo de vehículo.',
-      precio: '$1,200 MXN',
-      imagen: '/bateria.jpg', // Ruta de la imagen del producto
+      nombre: 'producto1',
+      descripcion: 'sabor fresa.',
+      precio: '$50.00 MXN',
+      imagen: '/producto1.jpg', // Ruta de la imagen del producto
     },
     {
       id: 2,
-      nombre: 'Aceite para motor',
-      descripcion: 'Aceite sintético premium para mayor durabilidad del motor.',
-      precio: '$500 MXN',
-      imagen: '/aceite.jpg',
+      nombre: 'producto2',
+      descripcion: 'sabor mango',
+      precio: '$100.00 MXN',
+      imagen: '/producto2.jpg',
     },
     {
       id: 3,
-      nombre: 'Filtro de aire',
-      descripcion: 'Filtro de aire para mejorar la eficiencia del combustible.',
-      precio: '$300 MXN',
-      imagen: '/filtro-aire.jpg',
-    },
-    {
-      id: 4,
-      nombre: 'Bujías',
-      descripcion: 'Juego de 4 bujías de encendido de alto rendimiento.',
-      precio: '$450 MXN',
-      imagen: '/bujias.jpg',
-    },
-    {
-      id: 5,
-      nombre: 'Pastillas de freno',
-      descripcion: 'Pastillas de freno resistentes para mayor seguridad.',
-      precio: '$750 MXN',
-      imagen: '/frenos.jpg',
+      nombre: 'producto3',
+      descripcion: 'sabor jobo',
+      precio: '$130.00 MXN',
+      imagen: '/producto3.jpg',
     },
   ];
 
   return (
     <div className="container mx-auto py-8 pt-36">
-      <h1 className="text-3xl font-bold text-center mb-8">Catálogo de Productos</h1>
+      <h1 className="text-3xl font-bold text-center mb-8 pt-10">Catálogo de Productos</h1>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
         {productos.map((producto) => (
@@ -58,7 +44,7 @@ function HomePage() {
               <h2 className="text-xl font-bold mb-2">{producto.nombre}</h2>
               <p className="text-gray-600 mb-4">{producto.descripcion}</p>
               <p className="text-lg font-bold mb-4">{producto.precio}</p>
-              <button className="bg-green-700 text-white py-2 px-4 rounded hover:bg-green-600">
+              <button className="bg-pink-700 text-white py-2 px-4 rounded hover:bg-pink-500">
                 Comprar
               </button>
             </div>

@@ -1,5 +1,5 @@
-"use client";
-
+"use client"
+//recibe
 import { useState } from 'react';
 import { useRouter } from 'next/navigation'; // Importar desde 'next/navigation'
 import { useEffect } from 'react';
@@ -22,7 +22,7 @@ function ResetPasswordPage({ params }) {
     }
 
     try {
-      const response = await fetch(`http://localhost:4000/api/ auth/reset-password/${token}`, {
+      const response = await fetch(`http://localhost:4000/api/auth/reset-password/${token}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -43,11 +43,11 @@ function ResetPasswordPage({ params }) {
 
   return (
     <div className="min-h-screen flex">
-      <div className="w-full md:w-1/2 flex flex-col justify-center items-center bg-white p-8">
+      <div className="w-full md:w-1/2 flex flex-col justify-center items-center bg-white p-12">
         <div className="w-full max-w-md">
           <h2 className="text-2xl font-bold text-center mb-6">Restablecer Contraseña</h2>
           {passwordReset ? (
-            <p className="text-green-700 text-sm text-center mt-6">
+            <p className="text-pink-700 text-sm text-center mt-6">
               Tu contraseña ha sido restablecida con éxito. Ahora puedes iniciar sesión.
             </p>
           ) : (
@@ -78,7 +78,7 @@ function ResetPasswordPage({ params }) {
 
               <button
                 type="submit"
-                className="w-full bg-green-700 text-white py-2 px-4 rounded-lg hover:bg-green-600"
+                className="w-full bg-pink-700 text-white py-2 px-4 rounded-lg hover:bg-pink-500"
               >
                 Restablecer Contraseña
               </button>

@@ -47,7 +47,7 @@ function ResetPasswordPage({ params }) {
         <div className="w-full max-w-md">
           <h2 className="text-2xl font-bold text-center mb-6">Restablecer Contraseña</h2>
           {passwordReset ? (
-            <p className="text-green-700 text-sm text-center mt-6">
+            <p className="text-pink-700 text-sm text-center mt-6">
               Tu contraseña ha sido restablecida con éxito. Ahora puedes iniciar sesión.
             </p>
           ) : (
@@ -78,7 +78,7 @@ function ResetPasswordPage({ params }) {
 
               <button
                 type="submit"
-                className="w-full bg-green-700 text-white py-2 px-4 rounded-lg hover:bg-green-600"
+                className="w-full bg-pink-700 text-white py-2 px-4 rounded-lg hover:bg-pink-500"
               >
                 Restablecer Contraseña
               </button>
