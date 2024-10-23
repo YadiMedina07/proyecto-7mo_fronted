@@ -1,110 +1,79 @@
-"use client";
-
+"use client"; // Para asegurar que es un componente del cliente
+//este es el que manda
 import { useState } from 'react';
-import { useRouter } from 'next/router';
 
-function ResetPasswordPage() {
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+function RequestPasswordResetPage() {
+  const [email, setEmail] = useState('');
+  const [message, setMessage] = useState('');
   const [error, setError] = useState('');
-  const [passwordReset, setPasswordReset] = useState(false);
-  const router = useRouter();
-  const { token } = router.query; // Obtener el token de la URL
 
-  const handlePasswordChange = async (e) => {
+  const handleEmailChange = (e) => {
+    setEmail(e.target.value);
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (newPassword !== confirmPassword) {
-      setError('Las contraseñas no coinciden.');
+    if (!email) {
+      setError('Por favor, ingresa un correo válido');
       return;
     }
 
     try {
-      const response = await fetch('/api/reset-password', {
+      const response = await fetch('http://localhost:4000/api/auth/send-reset-email', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ token, newPassword }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
       });
 
       if (response.ok) {
-        setPasswordReset(true);
+        setMessage('Correo enviado con éxito, revisa tu bandeja de entrada');
+        setError(''); // Limpiar error si es exitoso
       } else {
         const result = await response.json();
-        setError(result.message);
+        setError(result.message || 'No se pudo enviar el correo');
       }
     } catch (error) {
-      setError('Error al restablecer la contraseña.');
+      setError('Hubo un problema enviando el correo de recuperación.');
     }
   };
 
   return (
-    <div className="min-h-screen flex">
-      {/* Sección izquierda: Fondo con imagen o color */}
-      <div className="hidden md:block w-1/2 bg-cover bg-blue-500 p-8" style={{ backgroundImage: "url('/images/background-left.jpg')" }}>
-        <div className="h-full flex flex-col justify-center text-white text-center">
-          <h1 className="text-4xl font-bold">Restablecer Contraseña</h1>
-          <p className="mt-4 text-lg">Protege tu cuenta creando una contraseña segura</p>
-        </div>
-      </div>
+    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+      <div className="w-full max-w-md bg-white p-8 rounded-lg shadow-md">
+        <h2 className="text-2xl font-bold text-center mb-6">Restablecer Contraseña</h2>
+        
+        {message && (
+          <p className="text-green-600 text-center mb-4">{message}</p>
+        )}
 
-      {/* Sección derecha: Formulario de restablecimiento */}
-      <div className="w-full md:w-1/2 flex flex-col justify-center items-center bg-white p-8">
-        <div className="w-full max-w-md">
-          <h2 className="text-2xl font-bold text-center mb-6">Cambiar Contraseña</h2>
-          {!passwordReset ? (
-            <form onSubmit={handlePasswordChange}>
-              {/* Nueva contraseña */}
-              <div className="mb-4">
-                <label className="block text-gray-700">Escriba su contraseña</label>
-                <input
-                  type="password"
-                  placeholder="Nueva contraseña"
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                  className={`w-full border p-2 rounded-lg ${
-                    error ? 'border-red-500' : 'border-gray-300'
-                  }`}
-                  required
-                />
-              </div>
+        {error && (
+          <p className="text-red-600 text-center mb-4">{error}</p>
+        )}
 
-              {/* Confirmar contraseña */}
-              <div className="mb-4">
-                <label className="block text-gray-700">Confirme su contraseña</label>
-                <input
-                  type="password"
-                  placeholder="Confirmar contraseña"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  className={`w-full border p-2 rounded-lg ${
-                    error ? 'border-red-500' : 'border-gray-300'
-                  }`}
-                  required
-                />
-              </div>
+        <form onSubmit={handleSubmit}>
+          <div className="mb-4">
+            <label className="block text-gray-700">Correo electrónico</label>
+            <input
+              type="email"
+              placeholder="Ingresa tu correo electrónico"
+              value={email}
+              onChange={handleEmailChange}
+              className="w-full border border-gray-300 p-2 rounded-lg"
+              required
+            />
+          </div>
 
-              {/* Mostrar error si las contraseñas no coinciden */}
-              {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
-
-              {/* Botón de restablecer */}
-              <button
-                type="submit"
-                className="w-full bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-500"
-              >
-                Cambiar la contraseña
-              </button>
-            </form>
-          ) : (
-            <p className="text-green-600 text-sm text-center mt-6">
-              Tu contraseña ha sido restablecida con éxito. Ahora puedes iniciar sesión con tu nueva contraseña.
-            </p>
-          )}
-        </div>
+          <button
+            type="submit"
+            className="w-full bg-green-700 text-white py-2 px-4 rounded-lg hover:bg-green-600"
+          >
+            Enviar enlace de restablecimiento
+          </button>
+        </form>
       </div>
     </div>
   );
 }
 
-export default ResetPasswordPage;
+export default RequestPasswordResetPage;

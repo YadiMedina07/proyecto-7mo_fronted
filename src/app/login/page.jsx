@@ -1,6 +1,31 @@
-import Link from "next/link";
+'use client';  // Esta línea es importante para habilitar el uso de hooks en este componente
 
-function LoginPage() {
+import { useState } from 'react';
+import Link from 'next/link';
+import { useAuth } from '../../context/authContext'; // Importamos el contexto de autenticación
+
+const LoginPage = () => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [message, setMessage] = useState('');
+  const { login } = useAuth(); // Obtenemos la función de login del contexto
+
+  // Manejador del submit del formulario
+  const handleSubmit = async (e) => {
+    e.preventDefault(); // Prevenir el refresh de la página
+
+    try {
+      // Llamamos a la función login del contexto
+      await login(email, password);
+      setMessage('Inicio de sesión exitoso');
+      // Aquí puedes redirigir al usuario después de un login exitoso
+      // Por ejemplo, usando Router.push('/ruta-destino')
+    } catch (error) {
+      console.error('Error en el inicio de sesión:', error);
+      setMessage('Error interno del servidor');
+    }
+  };
+
   return (
     <div className="min-h-screen flex flex-col md:flex-row pt-28">
       {/* Sección izquierda: Imagen y beneficios */}
@@ -32,13 +57,17 @@ function LoginPage() {
           </Link>
 
           <h2 className="text-2xl font-bold mb-4">Inicia Sesión</h2>
+          
+          {message && <p className="text-center text-red-500 mb-4">{message}</p>}
 
-          <form>
+          <form onSubmit={handleSubmit}>
             {/* Correo Electrónico */}
             <div className="mb-4">
               <label className="block text-gray-700">Correo electrónico</label>
               <input
                 type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 placeholder="Correo electrónico"
                 className="w-full border border-gray-300 p-2 rounded-lg"
               />
@@ -49,18 +78,11 @@ function LoginPage() {
               <label className="block text-gray-700">Contraseña</label>
               <input
                 type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 placeholder="Contraseña"
                 className="w-full border border-gray-300 p-2 rounded-lg"
               />
-            </div>
-
-            {/* Opciones adicionales */}
-            <div className="flex justify-between items-center mb-4">
-              <Link href="/restorepassword">
-                <p className="text-sm text-green-700 font-semibold hover:underline">
-                  ¿Olvidaste tu contraseña?
-                </p>
-              </Link>
             </div>
 
             {/* Botón de Iniciar Sesión */}
@@ -75,7 +97,15 @@ function LoginPage() {
             <p className="text-sm text-gray-500 mt-4 text-center">
               ¿No tienes una cuenta?{" "}
               <Link href="/register">
-                <p className="text-green-700 font font-semibold">Crear una cuenta</p>
+                <span className="text-green-700 font font-semibold">Crear una cuenta</span>
+              </Link>
+            </p>
+
+            {/* Botón para restablecer la contraseña */}
+            <p className="text-sm text-gray-500 mt-4 text-center">
+              ¿Olvidaste tu contraseña?{" "}
+              <Link href="/resetpassword">
+                <span className="text-green-700 font font-semibold">Restablecer contraseña</span>
               </Link>
             </p>
           </form>
@@ -83,6 +113,6 @@ function LoginPage() {
       </div>
     </div>
   );
-}
+};
 
 export default LoginPage;

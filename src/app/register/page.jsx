@@ -4,6 +4,9 @@ import { useState } from "react";
 import Link from "next/link";
 import CryptoJS from "crypto-js";
 import ReCAPTCHA from "react-google-recaptcha";
+import Swal from 'sweetalert2';
+
+
 
 function RegisterPage() {
   const [password, setPassword] = useState("");
@@ -13,6 +16,14 @@ function RegisterPage() {
   const [birthDate, setBirthDate] = useState("");
   const [birthDateValid, setBirthDateValid] = useState(true);
   const [recaptchaToken, setRecaptchaToken] = useState(null);
+  const [onSubmitLoading, setOnSubmitLoading] = useState(false);
+
+  const [nombre, setNombre] = useState("");
+  const [apellido, setApellido] = useState("");
+  const [email, setEmail] = useState("");
+  const [telefono, setTelefono] = useState("");
+  const [preguntaSecreta, setPreguntaSecreta] = useState("");
+  const [respuestaSecreta, setRespuestaSecreta] = useState("");
 
   // Función para manejar el token generado por el CAPTCHA
   const handleRecaptchaChange = (token) => {
@@ -171,6 +182,54 @@ function RegisterPage() {
     }
   };
 
+  // Función para manejar el envío del formulario al backend
+  const onSubmit = async (event) => {
+    event.preventDefault();
+    setOnSubmitLoading(true); // Mostrar loading al enviar
+    try {
+      const response = await fetch("http://localhost:4000/api/auth/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: nombre,
+          lastname: apellido,
+          email,
+          password,
+          fechadenacimiento: birthDate,
+          user: nombre,
+          telefono,
+          preguntaSecreta,
+          respuestaSecreta,
+        }),
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        Swal.fire({
+          icon: "success",
+          title: "Registro exitoso",
+          text: "¡Te has registrado con éxito!",
+        });
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: data.message,
+        });
+      }
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Error en el servidor",
+        text: "Ocurrió un error interno.",
+      });
+    } finally {
+      setOnSubmitLoading(false); // Dejar de mostrar loading
+    }
+  };
+
   return (
     <div className="min-h-screen flex pt-28">
       {/* Sección izquierda: Formulario */}
@@ -185,13 +244,16 @@ function RegisterPage() {
 
           <h2 className="text-2xl font-bold mb-4">Crea tu cuenta</h2>
 
-          <form>
+          {/* El formulario ahora ejecuta la función onSubmit */}
+          <form onSubmit={onSubmit}>
             {/* Nombre */}
             <div className="mb-4">
               <label className="block text-gray-700">Nombre</label>
               <input
                 type="text"
                 placeholder="Nombre"
+                value={nombre}
+                onChange={(e) => setNombre(e.target.value)}
                 className="w-full border border-gray-300 p-2 rounded-lg"
               />
             </div>
@@ -202,6 +264,8 @@ function RegisterPage() {
               <input
                 type="text"
                 placeholder="Apellido"
+                value={apellido}
+                onChange={(e) => setApellido(e.target.value)}
                 className="w-full border border-gray-300 p-2 rounded-lg"
               />
             </div>
@@ -212,6 +276,8 @@ function RegisterPage() {
               <input
                 type="email"
                 placeholder="Correo Electrónico"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 className="w-full border border-gray-300 p-2 rounded-lg"
               />
             </div>
@@ -222,6 +288,8 @@ function RegisterPage() {
               <input
                 type="tel"
                 placeholder="Teléfono"
+                value={telefono}
+                onChange={(e) => setTelefono(e.target.value)}
                 className="w-full border border-gray-300 p-2 rounded-lg"
                 pattern="[0-9]{10}" // Solo números y exactamente 10 dígitos
                 maxLength="10" // Máximo 10 caracteres
@@ -248,29 +316,29 @@ function RegisterPage() {
               />
               {!birthDateValid && (
                 <p className="text-red-500 text-sm mt-1">
-                  Su edad esta fuera del rango permitido.
+                  Su edad está fuera del rango permitido.
                 </p>
               )}
-            </div>
-
-            {/* Usuario */}
-            <div className="mb-4">
-              <label className="block text-gray-700">Usuario</label>
-              <input
-                type="text"
-                placeholder="Usuario"
-                className="w-full border border-gray-300 p-2 rounded-lg"
-              />
             </div>
 
             {/* Pregunta Secreta */}
             <div className="mb-4">
               <label className="block text-gray-700">Pregunta Secreta</label>
-              <input
-                type="text"
-                placeholder="Pregunta Secreta"
-                className="w-full border border-gray-300 p-2 rounded-lg"
-              />
+                <select
+                  value={preguntaSecreta}
+                  onChange={(e) => setPreguntaSecreta(e.target.value)}
+                  className="w-full border border-gray-300 p-2 rounded-lg"
+                >
+                <option value="¿Cuál es el nombre de tu primera mascota?">
+                  ¿Cuál es el nombre de tu primera mascota?
+                </option>
+                <option value="¿Cuál es tu película favorita?">
+                  ¿Cuál es tu película favorita?
+                </option>
+                <option value="¿En qué ciudad naciste?">
+                  ¿En qué ciudad naciste?
+                </option>
+              </select>
             </div>
 
             {/* Respuesta Secreta */}
@@ -279,6 +347,8 @@ function RegisterPage() {
               <input
                 type="text"
                 placeholder="Respuesta Secreta"
+                value={respuestaSecreta}
+                onChange={(e) => setRespuestaSecreta(e.target.value)}
                 className="w-full border border-gray-300 p-2 rounded-lg"
               />
             </div>
@@ -298,8 +368,7 @@ function RegisterPage() {
                 onClick={togglePasswordVisibility}
                 className="absolute right-9 top-8 text-gray-600"
               >
-                {passwordVisible ? "Ocultar" : "Mostrar"}{" "}
-                {/* Texto del botón */}
+                {passwordVisible ? "Ocultar" : "Mostrar"}
               </button>
               {passwordWarning && (
                 <p className="text-red-500 text-sm mt-1">{passwordWarning}</p>
@@ -323,7 +392,7 @@ function RegisterPage() {
                 Confirmar Contraseña
               </label>
               <input
-                type={confirmPasswordVisible ? "text" : "password"} // Cambia entre "text" y "password"
+                type={confirmPasswordVisible ? "text" : "password"}
                 placeholder="Confirmar Contraseña"
                 value={confirmPassword}
                 onChange={handleConfirmPasswordChange}
@@ -336,8 +405,7 @@ function RegisterPage() {
                 onClick={toggleConfirmPasswordVisibility}
                 className="absolute right-9 top-8 text-gray-600"
               >
-                {confirmPasswordVisible ? "Ocultar" : "Mostrar"}{" "}
-                {/* Texto del botón */}
+                {confirmPasswordVisible ? "Ocultar" : "Mostrar"}
               </button>
               {!passwordMatch && (
                 <p className="text-red-500 text-sm mt-1">
@@ -389,7 +457,7 @@ function RegisterPage() {
 
             <div className="mb-4">
               <ReCAPTCHA
-                sitekey="6Ld-v2QqAAAAAMir6pQVXyoPro8-l8PhJotxHg1P" // Reemplaza con tu Site Key de Google reCAPTCHA
+                sitekey="6LdpXWgqAAAAAOWwGI-kkrTyOLqKggmeO4D4RxY8"
                 onChange={handleRecaptchaChange}
               />
             </div>
@@ -398,11 +466,13 @@ function RegisterPage() {
             <button
               type="submit"
               className={`w-full py-2 px-4 rounded-lg ${
-                passwordMatch && recaptchaToken ? "bg-green-700" : "bg-gray-400"
+                passwordMatch && recaptchaToken && !onSubmitLoading
+                  ? "bg-green-700"
+                  : "bg-gray-400"
               } text-white hover:bg-green-600`}
-              disabled={!passwordMatch || !recaptchaToken} // El botón está deshabilitado si el CAPTCHA no está completado
+              disabled={!passwordMatch || !recaptchaToken || onSubmitLoading} // Deshabilitar cuando está cargando
             >
-              Crear Cuenta
+              {onSubmitLoading ? "Cargando..." : "Crear Cuenta"}
             </button>
 
             {/* Términos y Condiciones */}
@@ -445,9 +515,7 @@ function RegisterPage() {
               </span>
             </li>
             <li className="flex items-center space-x-2">
-              <span>
-                Atencion personalizada
-              </span>
+              <span>Atención personalizada</span>
             </li>
           </ul>
 
