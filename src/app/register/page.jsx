@@ -5,8 +5,7 @@ import Link from "next/link";
 import CryptoJS from "crypto-js";
 import ReCAPTCHA from "react-google-recaptcha";
 import Swal from 'sweetalert2';
-
-
+import { useRouter } from 'next/navigation'; // Importa useRouter
 
 function RegisterPage() {
   const [password, setPassword] = useState("");
@@ -24,6 +23,9 @@ function RegisterPage() {
   const [telefono, setTelefono] = useState("");
   const [preguntaSecreta, setPreguntaSecreta] = useState("");
   const [respuestaSecreta, setRespuestaSecreta] = useState("");
+
+  // Hook para redireccionar
+  const router = useRouter(); // Inicializa el hook de enrutamiento
 
   // Función para manejar el token generado por el CAPTCHA
   const handleRecaptchaChange = (token) => {
@@ -211,6 +213,9 @@ function RegisterPage() {
           icon: "success",
           title: "Registro exitoso",
           text: "¡Te has registrado con éxito!",
+        }).then(() => {
+          // Redireccionar al login después de que el usuario haga clic en "OK"
+          router.push('/login');
         });
       } else {
         Swal.fire({

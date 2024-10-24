@@ -6,23 +6,23 @@ function HomePage() {
     {
       id: 1,
       nombre: 'producto1',
-      descripcion: 'sabor fresa.',
+      descripcion: 'sabor zarzamora.',
       precio: '$50.00 MXN',
-      imagen: '/producto1.jpg', // Ruta de la imagen del producto
+      imagen: '/assets/producto1.jpg', // Ruta de la imagen del producto
     },
     {
       id: 2,
       nombre: 'producto2',
-      descripcion: 'sabor mango',
+      descripcion: 'sabor jobo',
       precio: '$100.00 MXN',
-      imagen: '/producto2.jpg',
+      imagen: '/assets/producto2.jpg',
     },
     {
       id: 3,
       nombre: 'producto3',
-      descripcion: 'sabor jobo',
+      descripcion: 'sabor mango',
       precio: '$130.00 MXN',
-      imagen: '/producto3.jpg',
+      imagen: '/assets/producto3.jpg',
     },
   ];
 
@@ -38,7 +38,7 @@ function HomePage() {
               alt={producto.nombre}
               width={300}
               height={200}
-              className="w-full h-48 object-cover"
+              className="w-full h-60 object-contain"
             />
             <div className="p-4">
               <h2 className="text-xl font-bold mb-2">{producto.nombre}</h2>

@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation'; // Importamos useRouter para redirigir
 import { useAuth } from '../../context/authContext'; // Importamos el contexto de autenticación
 
 const LoginPage = () => {
@@ -9,6 +10,7 @@ const LoginPage = () => {
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
   const { login } = useAuth(); // Obtenemos la función de login del contexto
+  const router = useRouter(); // Usamos useRouter para manejar las redirecciones
 
   // Manejador del submit del formulario
   const handleSubmit = async (e) => {
@@ -16,10 +18,13 @@ const LoginPage = () => {
 
     try {
       // Llamamos a la función login del contexto
-      await login(email, password);
-      setMessage('Inicio de sesión exitoso');
-      // Aquí puedes redirigir al usuario después de un login exitoso
-      // Por ejemplo, usando Router.push('/ruta-destino')
+      const result = await login(email, password);
+      if (result.success) {
+        setMessage('Inicio de sesión exitoso');
+        router.push('/');  // Redirigimos al usuario a la página de inicio
+      } else {
+        setMessage(result.message);
+      }
     } catch (error) {
       console.error('Error en el inicio de sesión:', error);
       setMessage('Error interno del servidor');

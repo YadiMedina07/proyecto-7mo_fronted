@@ -32,19 +32,19 @@ function Footer() {
             <ul className="space-y-2">
               <li>
                 <Link href="/ubicaciones">
-                  <p className="hover:text-pink-700 text-lg">Ubicacion</p>
+                  <p className="hover:text-black text-lg">Ubicacion</p>
                 </Link>
               </li>
               <li>
                 <Link href="/marca">
-                  <p className="hover:text-pink-700 text-lg">
+                  <p className="hover:text-black text-lg">
                     Busca por Marca
                   </p>
                 </Link>
               </li>
               <li>
                 <Link href="/modelo">
-                  <p className="hover:text-pink-700 text-lg">
+                  <p className="hover:text-black text-lg">
                     Busca por Modelo
                   </p>
                 </Link>
@@ -57,21 +57,21 @@ function Footer() {
             <ul className="space-y-2">
               <li>
                 <Link href="/nosotros">
-                  <p className="hover:text-pink-700 text-lg">
+                  <p className="hover:text-black text-lg">
                     Acerca de nosotros
                   </p>
                 </Link>
               </li>
               <li>
                 <Link href="/politicas">
-                  <p className="hover:text-pink-700 text-lg">
+                  <p className="hover:text-black text-lg">
                     Politicas de Privacidad
                   </p>
                 </Link>
               </li>
               <li>
                 <Link href="/terminos&condiciones">
-                  <p className="hover:text-pink-700 text-lg">
+                  <p className="hover:text-black text-lg">
                     Terminos y Condiciones
                   </p>
                 </Link>
@@ -82,13 +82,20 @@ function Footer() {
             <h3 className="font-bold mb-4 text-lg">SERVICIO AL CLIENTE</h3>
             <ul className="space-y-2">
               <li>
+                <Link href="/factura">
+                  <p className="hover:text-black text-lg">
+                    Facturación Electrónica
+                  </p>
+                </Link>
+              </li>
+              <li>
                 <Link href="/contactos">
-                  <p className="hover:text-pink-700 text-lg">Contáctanos</p>
+                  <p className="hover:text-black text-lg">Contáctanos</p>
                 </Link>
               </li>
               <li>
                 <Link href="/faq">
-                  <p className="hover:text-pink-700 text-lg">
+                  <p className="hover:text-black text-lg">
                     Preguntas frecuentes
                   </p>
                 </Link>
