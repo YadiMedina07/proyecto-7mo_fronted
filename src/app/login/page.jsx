@@ -17,15 +17,19 @@ const LoginPage = () => {
     e.preventDefault(); // Prevenir el refresh de la página
 
     try {
-      // Llamamos a la función login del contexto
+      // Llamamos a la función login del contexto de autenticación
       const result = await login(email, password);
+
       if (result.success) {
+        // Si el login es exitoso, mostramos un mensaje y redirigimos al inicio
         setMessage('Inicio de sesión exitoso');
-        router.push('/');  // Redirigimos al usuario a la página de inicio
+        router.push('/');  // Redirigimos a la página de inicio
       } else {
+        // Si hay un error en las credenciales, mostramos el mensaje de error
         setMessage(result.message);
       }
     } catch (error) {
+      // Si ocurre un error inesperado (como problemas de servidor)
       console.error('Error en el inicio de sesión:', error);
       setMessage('Error interno del servidor');
     }

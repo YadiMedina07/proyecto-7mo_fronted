@@ -70,7 +70,7 @@ function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/terminos&condiciones">
+                <Link href="/terminoscondiciones">
                   <p className="hover:text-black text-lg">
                     Terminos y Condiciones
                   </p>

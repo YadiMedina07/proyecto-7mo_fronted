@@ -80,7 +80,7 @@ function Navbar() {
           </Link>
         </div>
         <div className="flex items-center space-x-2 text-gray-800 hover:text-pink-700">
-          <Link href="/politica" className="flex items-center space-x-2">
+          <Link href="/politicas" className="flex items-center space-x-2">
             <span>Politicas</span>
           </Link>
         </div>
@@ -164,21 +164,6 @@ function Navbar() {
                             <Link href="/adminUsuarios">
                               <p className="mt-2 hover:text-pink-700 hover:font-bold" >
                                 Gestión de Usuarios
-                              </p>
-                            </Link>
-                            <Link href="/admin/productos">
-                              <p className="mt-2 hover:text-pink-700 hover:font-bold">
-                                Gestión de Productos
-                              </p>
-                            </Link>
-                            <Link href="/admin/ordenes">
-                              <p className="mt-2 hover:text-pink-700 hover:font-bold">
-                                Gestión de Órdenes
-                              </p>
-                            </Link>
-                            <Link href="/admin/reportes">
-                              <p className="mt-2 hover:text-pink-700 hover:font-bold">
-                                Reportes
                               </p>
                             </Link>
                           </div>

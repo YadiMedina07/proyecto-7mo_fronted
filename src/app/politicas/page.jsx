@@ -1,7 +1,7 @@
 "use client"; // Aseguramos que este es un Client Component
 
 import { useEffect, useState } from 'react';
-
+import { CONFIGURACIONES } from '../config/config';
 function PoliticasPage() {
   const [politica, setPolitica] = useState(null);
 
@@ -9,7 +9,7 @@ function PoliticasPage() {
     // Simulación de una llamada a la API para obtener los datos de la política de privacidad
     const fetchPolitica = async () => {
       try {
-        const response = await fetch('http://localhost:4000/api/docs/privacy-policy/current'); // Ajusta la URL a la correcta
+        const response = await fetch(`${CONFIGURACIONES.BASEURL2}/docs/privacy-policy/current`); // Ajusta la URL a la correcta
         const data = await response.json();
         setPolitica(data);
       } catch (error) {
