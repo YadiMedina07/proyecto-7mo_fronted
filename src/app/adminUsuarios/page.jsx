@@ -21,7 +21,7 @@ function AdminPage() {
 
   const fetchUsers = async () => {
     try {
-      const response = await fetch(`${CONFIGURACIONES.BASEURL2}/auth/users`, {
+      const response = await fetch(`${CONFIGURACIONES.BASEURL}/auth/users`, {
         method: 'GET',
         credentials: 'include',
       });
@@ -42,7 +42,7 @@ function AdminPage() {
 
   const handleDelete = async (userId) => {
     try {
-      const response = await fetch(`${CONFIGURACIONES.BASEURL2}/auth/users/${userId}`, {
+      const response = await fetch(`${CONFIGURACIONES.BASEURL}/auth/users/${userId}`, {
         method: 'DELETE',
         credentials: 'include',
       });

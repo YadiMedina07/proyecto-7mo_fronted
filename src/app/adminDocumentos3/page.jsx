@@ -21,7 +21,7 @@ function DeslindeLegalPage() {
 
   const fetchDeslindeLegal = async () => {
     try {
-      const response = await fetch(`${CONFIGURACIONES.BASEURL2}/docs/deslinde-legal/current`, {
+      const response = await fetch(`${CONFIGURACIONES.BASEURL}/docs/deslinde-legal/current`, {
         method: 'GET',
         credentials: 'include',
       });
@@ -40,7 +40,7 @@ function DeslindeLegalPage() {
 
   const handleCreateDeslinde = async () => {
     try {
-      const response = await fetch(`${CONFIGURACIONES.BASEURL2}/docs/deslinde-legal`, {
+      const response = await fetch(`${CONFIGURACIONES.BASEURL}/docs/deslinde-legal`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

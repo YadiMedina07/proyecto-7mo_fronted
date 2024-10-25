@@ -21,7 +21,7 @@ function TermsConditionsPage() {
 
   const fetchTermsConditions = async () => {
     try {
-      const response = await fetch(`${CONFIGURACIONES.BASEURL2}/docs/terms-conditions/current`, {
+      const response = await fetch(`${CONFIGURACIONES.BASEURL}/docs/terms-conditions/current`, {
         method: 'GET',
         credentials: 'include',
       });
@@ -40,7 +40,7 @@ function TermsConditionsPage() {
 
   const handleCreateTerms = async () => {
     try {
-      const response = await fetch(`${CONFIGURACIONES.BASEURL2}/docs/terms-conditions`, {
+      const response = await fetch(`${CONFIGURACIONES.BASEURL}/docs/terms-conditions`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

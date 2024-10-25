@@ -21,7 +21,7 @@ function PrivacyPolicyPage() {
 
   const fetchPolicies = async () => {
     try {
-      const response = await fetch(`${CONFIGURACIONES.BASEURL2}/docs/privacy-policy/current`, {
+      const response = await fetch(`${CONFIGURACIONES.BASEURL}/docs/privacy-policy/current`, {
         method: 'GET',
         credentials: 'include',
       });
