@@ -12,7 +12,7 @@ import {
   FaSun,
 } from "react-icons/fa";
 import { FiSearch } from "react-icons/fi";
-import logo from "../assets/logo_ch.png";
+import { useLogo } from "../context/LogoContext";
 import { useAuth } from "../context/authContext"; // Importa el contexto de autenticación
 import { useRouter } from "next/navigation"; // Importa el hook de useRouter para la redirección
 
@@ -24,6 +24,7 @@ function Navbar() {
   const [documentAdminMenuOpen, setDocumentAdminMenuOpen] = useState(false);
   const dropdownRef = useRef(null);
   const router = useRouter();
+  const { logoUrl } = useLogo();
 
   const toggleDropdown = () => setDropdownOpen(!dropdownOpen);
   const toggleAdminMenu = () => setAdminMenuOpen(!adminMenuOpen);
@@ -64,9 +65,15 @@ function Navbar() {
       </div>
       <div className="container mx-auto flex justify-between items-center py-2">
         <div className="flex items-center">
-          <Link href={"/"}>
-            <Image src={logo} alt="Logo" width={100} height={100} />
-          </Link>
+        <Link href="/" className="flex items-center">
+        <Image
+          src={logoUrl || "/fallback-logo.png"}
+          alt="Corazon Logo"
+          width={100}
+          height={40}
+          className="object-contain"
+        />
+      </Link>
         </div>
 
         <div className="flex items-center space-x-4">
@@ -221,6 +228,17 @@ function Navbar() {
                                     Administrar Deslinde
                                   </p>
                                 </Link>
+                                <Link href="/adminLogo">
+                                    <p
+                                      className={`mt-2 ${
+                                        theme === "dark"
+                                          ? "hover:text-yellow-400"
+                                          : "hover:text-green-700"
+                                      }`}
+                                    >
+                                      Administrar Logo
+                                    </p>
+                                  </Link>
                               </div>
                             )}
                           </div>
