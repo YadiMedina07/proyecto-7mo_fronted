@@ -7,6 +7,8 @@ import ReCAPTCHA from "react-google-recaptcha";
 import Swal from 'sweetalert2';
 import { useRouter } from 'next/navigation'; // Importa useRouter
 import { CONFIGURACIONES } from '../config/config';
+import { useAuth } from '../../context/authContext'; // Importa el contexto para usar theme
+
 
 function RegisterPage() {
   const [password, setPassword] = useState("");
@@ -24,9 +26,6 @@ function RegisterPage() {
   const [telefono, setTelefono] = useState("");
   const [preguntaSecreta, setPreguntaSecreta] = useState("");
   const [respuestaSecreta, setRespuestaSecreta] = useState("");
-
-  // Hook para redireccionar
-  const router = useRouter(); // Inicializa el hook de enrutamiento
 
   // Función para manejar el token generado por el CAPTCHA
   const handleRecaptchaChange = (token) => {
@@ -185,13 +184,17 @@ function RegisterPage() {
     }
   };
 
+  // Hook para redireccionar
+  const { theme } = useAuth(); // Obtener el tema desde el contexto
+  const router = useRouter(); // Inicializa el hook de enrutamiento
+  //const router = useRouter(); // Hook para redireccionar
 
   // Función para manejar el envío del formulario al backend
   const onSubmit = async (event) => {
     event.preventDefault();
     setOnSubmitLoading(true); // Mostrar loading al enviar
     try {
-      const response = await fetch(`${CONFIGURACIONES.BASEURL}/auth/signup`, {
+      const response = await fetch(`${CONFIGURACIONES.BASEURL2}/auth/signup`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -238,66 +241,64 @@ function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+    <div className={`min-h-screen flex items-center justify-center ${theme === 'dark' ? 'bg-gray-900 text-gray-100' : 'bg-gray-100 text-gray-900'}`}>
       {/* Sección izquierda: Formulario */}
-      <div className="w-full max-w-md bg-white p-8 shadow-lg rounded-lg mt-40">
+      <div className={`w-full max-w-md p-8 shadow-lg rounded-lg mt-40 ${theme === 'dark' ? 'bg-gray-800' : 'bg-white'}`}>
         <div className="mb-4">
           <Link href="/">
-            <p className="text-pink-700 font-bold mb-6 block">&larr; Atrás</p>
+            <p className={`font-bold mb-6 block ${theme === 'dark' ? 'text-blue-300 hover:text-blue-600' : 'text-pink-700'}`}>&larr; Atrás</p>
           </Link>
 
           {/* Logo */}
           <div className="text-center mb-8"></div>
 
-          <h2 className="text-2xl font-bold mb-8 text-center text-gray-900">Crea tu cuenta</h2>
+          <h2 className={`text-2xl font-bold mb-8 text-center ${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'}`}>Crea tu cuenta</h2>
 
           {/* El formulario ahora ejecuta la función onSubmit */}
           <form onSubmit={onSubmit}>
             {/* Nombre */}
             <div className="mb-4">
-              <label className="block text-gray-700">Nombre</label>
+              <label className={`${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>Nombre</label>
               <input
                 type="text"
                 placeholder="Nombre"
                 value={nombre}
                 onChange={(e) => setNombre(e.target.value)}
-                className="w-full border border-gray-300 p-2 rounded-lg"
-              />
+                className={`w-full p-2 rounded-lg border ${theme === 'dark' ? 'bg-gray-700 border-gray-600 text-gray-200' : 'bg-white border-gray-300 text-gray-800'}`} />
             </div>
 
             {/* Apellido */}
             <div className="mb-4">
-              <label className="block text-gray-700">Apellido</label>
+              <label className={`${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>Apellido</label>
               <input
                 type="text"
                 placeholder="Apellido"
                 value={apellido}
                 onChange={(e) => setApellido(e.target.value)}
-                className="w-full border border-gray-300 p-2 rounded-lg"
+                className={`w-full p-2 rounded-lg border ${theme === 'dark' ? 'bg-gray-700 border-gray-600 text-gray-200' : 'bg-white border-gray-300 text-gray-800'}`}
               />
             </div>
 
             {/* Correo Electrónico */}
             <div className="mb-4">
-              <label className="block text-gray-700">Correo Electrónico</label>
+              <label className={`${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>Correo Electrónico</label>
               <input
                 type="email"
                 placeholder="Correo Electrónico"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full border border-gray-300 p-2 rounded-lg"
-              />
+                className={`w-full p-2 rounded-lg border ${theme === 'dark' ? 'bg-gray-700 border-gray-600 text-gray-200' : 'bg-white border-gray-300 text-gray-800'}`} />
             </div>
 
             {/* Teléfono */}
             <div className="mb-4">
-              <label className="block text-gray-700">Teléfono</label>
+              <label className={`${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>Teléfono</label>
               <input
                 type="tel"
                 placeholder="Teléfono"
                 value={telefono}
                 onChange={(e) => setTelefono(e.target.value)}
-                className="w-full border border-gray-300 p-2 rounded-lg"
+                className={`w-full p-2 rounded-lg border ${theme === 'dark' ? 'bg-gray-700 border-gray-600 text-gray-200' : 'bg-white border-gray-300 text-gray-800'}`}
                 pattern="[0-9]{10}" // Solo números y exactamente 10 dígitos
                 maxLength="10" // Máximo 10 caracteres
                 onInput={(e) => {
@@ -312,10 +313,10 @@ function RegisterPage() {
 
             {/* Fecha de Nacimiento */}
             <div className="mb-4">
-              <label className="block text-gray-700">Fecha de Nacimiento</label>
+              <label className={`${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>Fecha de Nacimiento</label>
               <input
                 type="date"
-                className="w-full border border-gray-300 p-2 rounded-lg"
+                className={`w-full p-2 rounded-lg border ${theme === 'dark' ? 'bg-gray-700 border-gray-600 text-gray-200' : 'bg-white border-gray-300 text-gray-800'}`} 
                 value={birthDate}
                 onChange={handleBirthDateChange}
                 min="1960-01-01"
@@ -330,11 +331,11 @@ function RegisterPage() {
 
             {/* Pregunta Secreta */}
             <div className="mb-4">
-              <label className="block text-gray-700">Pregunta Secreta</label>
+              <label className={`${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>Pregunta Secreta</label>
               <select
                 value={preguntaSecreta}
                 onChange={(e) => setPreguntaSecreta(e.target.value)}
-                className="w-full border border-gray-300 p-2 rounded-lg"
+                className={`w-full p-2 rounded-lg border ${theme === 'dark' ? 'bg-gray-700 border-gray-600 text-gray-200' : 'bg-white border-gray-300 text-gray-800'}`}
               >
                 <option value="¿Cuál es el nombre de tu primera mascota?">
                   ¿Cuál es el nombre de tu primera mascota?
@@ -350,25 +351,25 @@ function RegisterPage() {
 
             {/* Respuesta Secreta */}
             <div className="mb-4">
-              <label className="block text-gray-700">Respuesta Secreta</label>
+              <label className={`${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>Respuesta Secreta</label>
               <input
                 type="text"
                 placeholder="Respuesta Secreta"
                 value={respuestaSecreta}
                 onChange={(e) => setRespuestaSecreta(e.target.value)}
-                className="w-full border border-gray-300 p-2 rounded-lg"
+                className={`w-full p-2 rounded-lg border ${theme === 'dark' ? 'bg-gray-700 border-gray-600 text-gray-200' : 'bg-white border-gray-300 text-gray-800'}`}
               />
             </div>
 
             {/* Contraseña */}
             <div className="mb-4 relative">
-              <label className="block text-gray-700">Contraseña</label>
+              <label className={`${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>Contraseña</label>
               <input
                 type={passwordVisible ? "text" : "password"} // Cambia entre "text" y "password"
                 placeholder="Contraseña"
                 value={password}
                 onChange={handlePasswordChange}
-                className="w-full border border-gray-300 p-2 rounded-lg"
+                className={`w-full p-2 rounded-lg border ${theme === 'dark' ? 'bg-gray-700 border-gray-600 text-gray-200' : 'bg-white border-gray-300 text-gray-800'}`}
               />
               <button
                 type="button"
@@ -395,7 +396,7 @@ function RegisterPage() {
 
             {/* Confirmar Contraseña */}
             <div className="mb-4 relative">
-              <label className="block text-gray-700">
+            <label className={`${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
                 Confirmar Contraseña
               </label>
               <input
@@ -403,8 +404,7 @@ function RegisterPage() {
                 placeholder="Confirmar Contraseña"
                 value={confirmPassword}
                 onChange={handleConfirmPasswordChange}
-                className={`w-full border p-2 rounded-lg ${passwordMatch ? "border-gray-300" : "border-red-500"
-                  }`}
+                className={`w-full p-2 rounded-lg border ${theme === 'dark' ? 'bg-gray-700 border-gray-600 text-gray-200' : 'bg-white border-gray-300 text-gray-800'}`}
               />
               <button
                 type="button"
@@ -424,40 +424,10 @@ function RegisterPage() {
             <div className="mb-4 text-sm">
               <p>Tu contraseña debe tener:</p>
               <ul className="list-disc pl-5">
-                <li
-                  className={
-                    password.length >= 8 && password.length <= 30
-                      ? "text-green-600"
-                      : "text-gray-600"
-                  }
-                >
-                  De 8 a 30 caracteres
-                </li>
-                <li
-                  className={
-                    /\d/.test(password) ? "text-green-600" : "text-gray-600"
-                  }
-                >
-                  Al menos 1 número
-                </li>
-                <li
-                  className={
-                    /[a-zA-Z]/.test(password)
-                      ? "text-green-600"
-                      : "text-gray-600"
-                  }
-                >
-                  Al menos 1 letra
-                </li>
-                <li
-                  className={
-                    /[^A-Za-z0-9]/.test(password)
-                      ? "text-green-600"
-                      : "text-gray-600"
-                  }
-                >
-                  Un símbolo especial
-                </li>
+              <li className={`${password.length >= 8 && password.length <= 30 ? 'text-green-600' : 'text-gray-600'}`}>De 8 a 30 caracteres</li>
+            <li className={`${/\d/.test(password) ? 'text-green-600' : 'text-gray-600'}`}>Al menos 1 número</li>
+            <li className={`${/[a-zA-Z]/.test(password) ? 'text-green-600' : 'text-gray-600'}`}>Al menos 1 letra</li>
+            <li className={`${/[^A-Za-z0-9]/.test(password) ? 'text-green-600' : 'text-gray-600'}`}>Un símbolo especial</li>
               </ul>
             </div>
 
@@ -471,27 +441,22 @@ function RegisterPage() {
             {/* Botón de Crear Cuenta */}
             <button
               type="submit"
-              className={`w-full py-2 px-4 rounded-lg ${passwordMatch && recaptchaToken && !onSubmitLoading
-                  ? "bg-pink-400"
-                  : "bg-pink-700"
-                } text-white hover:bg-pink-500`}
+              className={`w-full py-2 px-4 rounded-lg ${theme === 'dark' ? 'bg-pink-600 hover:bg-pink-500' : 'bg-pink-600 hover:bg-pink-500'} text-white`} 
               disabled={!passwordMatch || !recaptchaToken || onSubmitLoading} // Deshabilitar cuando está cargando
             >
               {onSubmitLoading ? "Cargando..." : "Crear Cuenta"}
             </button>
 
-            <span className="text-xs text-black mt-4 block text-center">
+            <span className={`text-xs mt-4 text-center ${theme === 'dark' ? 'text-gray-400' : 'text-black'}`}>
               ¿Ya tienes una cuenta?{" "}
               <Link href="/login">
-                <p className="text-blue-700 inline">
-                  Ingresa Aquí
-                </p>
+              <span className={`inline font-semibold ${theme === 'dark' ? 'text-blue-300 hover:text-blue-600' : 'text-blue-700'}`}>Ingresa aqui</span>
               </Link>
             </span>
           </form>
         </div>
       </div>
-      {/* Sección derecha: Beneficios */}
+
     </div>
   );
 }

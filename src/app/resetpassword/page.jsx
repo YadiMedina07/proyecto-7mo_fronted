@@ -2,7 +2,9 @@
 //este es el que manda
 import { useState } from 'react';
 import { CONFIGURACIONES } from '../config/config';
+import { useAuth } from '../../context/authContext';
 function RequestPasswordResetPage() {
+  const { theme } = useAuth();
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
@@ -20,7 +22,7 @@ function RequestPasswordResetPage() {
     }
 
     try {
-      const response = await fetch(`${CONFIGURACIONES.BASEURL}/auth/send-reset-email`, {
+      const response = await fetch(`${CONFIGURACIONES. BASEURL2}/auth/send-reset-email`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email }),
@@ -39,27 +41,27 @@ function RequestPasswordResetPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="w-full max-w-md bg-white p-8 rounded-lg shadow-md">
+    <div className={`min-h-screen flex items-center justify-center ${theme === 'dark' ? 'bg-gray-900' : 'bg-gray-100'}`}>
+      <div className={`w-full max-w-md ${theme === 'dark' ? 'bg-gray-800 text-gray-100' : 'bg-white text-gray-900'} p-8 rounded-lg shadow-md`}>
         <h2 className="text-2xl font-bold text-center mb-6">Restablecer Contraseña</h2>
         
         {message && (
-          <p className="text-green-600 text-center mb-4">{message}</p>
+          <p className="text-green-500 text-center mb-4">{message}</p>
         )}
 
         {error && (
-          <p className="text-red-600 text-center mb-4">{error}</p>
+          <p className="text-red-500 text-center mb-4">{error}</p>
         )}
 
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label className="block text-gray-700">Correo electrónico</label>
+            <label className={`block ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>Correo electrónico</label>
             <input
               type="email"
               placeholder="Ingresa tu correo electrónico"
               value={email}
               onChange={handleEmailChange}
-              className="w-full border border-gray-300 p-2 rounded-lg"
+              className={`w-full border ${theme === 'dark' ? 'border-gray-600 bg-gray-700 text-gray-100' : 'border-gray-300 bg-white text-gray-900'} p-2 rounded-lg`}
               required
             />
           </div>

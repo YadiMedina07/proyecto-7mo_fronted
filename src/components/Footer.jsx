@@ -38,14 +38,14 @@ function Footer() {
               <li>
                 <Link href="/marca">
                   <p className="hover:text-black text-lg">
-                    Busca por Marca
+                    Busca por tamaño
                   </p>
                 </Link>
               </li>
               <li>
                 <Link href="/modelo">
                   <p className="hover:text-black text-lg">
-                    Busca por Modelo
+                    Busca por sabor
                   </p>
                 </Link>
               </li>

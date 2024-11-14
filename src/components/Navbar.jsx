@@ -3,59 +3,63 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { FaUser, FaShoppingCart, FaBars } from "react-icons/fa";
+import {
+  FaUser,
+  FaShoppingCart,
+  FaBars,
+  FaFileInvoice,
+  FaMoon,
+  FaSun,
+} from "react-icons/fa";
+import { FiSearch } from "react-icons/fi";
 import logo from "../assets/logo_ch.png";
 import { useAuth } from "../context/authContext"; // Importa el contexto de autenticación
+import { useRouter } from "next/navigation"; // Importa el hook de useRouter para la redirección
 
 function Navbar() {
-  const { isAuthenticated, user, logout } = useAuth(); // Extraer logout del contexto de autenticación
+  const { isAuthenticated, user, logout, theme, toggleTheme } = useAuth();
+  const [isMounted, setIsMounted] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [adminMenuOpen, setAdminMenuOpen] = useState(false); // Nuevo menú para admin
+  const [adminMenuOpen, setAdminMenuOpen] = useState(false);
   const [documentAdminMenuOpen, setDocumentAdminMenuOpen] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
   const dropdownRef = useRef(null);
+  const router = useRouter();
 
-  const toggleDropdown = () => {
-    setDropdownOpen(!dropdownOpen);
-  };
-
-  const toggleAdminMenu = () => {
-    setAdminMenuOpen(!adminMenuOpen);
-  };
-
-  const toggleDocumentAdminMenu = () => {
+  const toggleDropdown = () => setDropdownOpen(!dropdownOpen);
+  const toggleAdminMenu = () => setAdminMenuOpen(!adminMenuOpen);
+  const toggleDocumentAdminMenu = () =>
     setDocumentAdminMenuOpen(!documentAdminMenuOpen);
-  };
 
-  const toggleMenu = () => {
-    setMenuOpen(!menuOpen);
-  };
-    // Manejar el cierre de sesión con redirección
-    const handleLogout = async () => {
-      await logout(); // Llamar a la función de logout desde el contexto
-      router.push('/'); // Redirigir al inicio después de cerrar sesión
-    };
-  
-
-  // Cerrar el dropdown cuando se haga clic fuera del mismo
+  // Este useEffect asegura que el componente se renderice solo después de que esté montado en el cliente
   useEffect(() => {
+    setIsMounted(true);
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setDropdownOpen(false);
-        setAdminMenuOpen(false); // Cerrar el menú admin si está abierto
+        setAdminMenuOpen(false);
         setDocumentAdminMenuOpen(false);
       }
     };
-
     document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  const handleLogout = async () => {
+    await logout();
+    router.push("/");
+  };
+
+  if (!isMounted) return null;
+
   return (
-    <nav className="bg-white border-b-2 rounded-lg border-gray-300 fixed top-0 w-full z-50 pb-4">
-      <div className="bg-gradient-to-r from-pink-500 to-pink-800 text-black py-1 text-center font-semibold">
+    <nav
+      className={`${theme === "dark" ? "bg-gray-900 border-gray-700 text-gray-200" : "bg-white border-b-2 text-gray-700"
+        } fixed top-0 w-full z-50 pb-4 rounded-lg`}
+    >
+      <div
+        className={`bg-gradient-to-r ${theme === "dark" ? "from-gray-800 to-gray-900 text-gray-200" : "from-pink-500 to-pink-800 text-black"
+          } py-1 text-center font-semibold`}
+      >
         Aprovecha Envío Gratis!!!!!! Compra ahora y obtén envíos gratis hasta el 31 de Diciembre
       </div>
       <div className="container mx-auto flex justify-between items-center py-2">
@@ -64,44 +68,47 @@ function Navbar() {
             <Image src={logo} alt="Logo" width={100} height={100} />
           </Link>
         </div>
-        <div className="flex items-center space-x-2 text-gray-800 hover:text-pink-700">
-          <Link href="/acercade" className="flex items-center space-x-2">
-            <span>Acerca de nosotros</span>
-          </Link>
-        </div>
-        <div className="flex items-center space-x-2 text-gray-800 hover:text-pink-700">
-          <Link href="/servicios" className="flex items-center space-x-2">
-            <span>Servicios</span>
-          </Link>
-        </div>
-        <div className="flex items-center space-x-2 text-gray-800 hover:text-pink-700">
-          <Link href="/contactanos" className="flex items-center space-x-2">
-            <span>Contactanos</span>
-          </Link>
-        </div>
-        <div className="flex items-center space-x-2 text-gray-800 hover:text-pink-700">
-          <Link href="/politicas" className="flex items-center space-x-2">
-            <span>Politicas</span>
-          </Link>
-        </div>
-        <div className="flex items-center space-x-2 text-gray-800 hover:text-pink-700">
-          <Link href="/catalogo" className="flex items-center space-x-2">
-            <span>Catalogo</span>
-          </Link>
-        </div>
 
-        {/* Usuario, Carrito y menú hamburguesa a la derecha */}
         <div className="flex items-center space-x-4">
-          <div className="flex items-center space-x-2 text-gray-800 hover:text-pink-700">
-            <Link href="/cart" className="flex items-center space-x-2">
-              <FaShoppingCart className="w-6 h-6 cursor-pointer" />
-              <span>Carrito</span>
-            </Link>
-          </div>
+  <Link href="/acercade">
+    <span className={`cursor-pointer ${theme === "dark" ? "text-gray-200 hover:text-pink-400" : "text-gray-700 hover:text-pink-700"}`}>
+      Acerca de nosotros
+    </span>
+  </Link>
+  <Link href="/servicios">
+    <span className={`cursor-pointer ${theme === "dark" ? "text-gray-200 hover:text-pink-400" : "text-gray-700 hover:text-pink-700"}`}>
+      Servicios
+    </span>
+  </Link>
+  <Link href="/contactos">
+    <span className={`cursor-pointer ${theme === "dark" ? "text-gray-200 hover:text-pink-400" : "text-gray-700 hover:text-pink-700"}`}>
+      Contactanos
+    </span>
+  </Link>
+  <Link href="/politicas">
+    <span className={`cursor-pointer ${theme === "dark" ? "text-gray-200 hover:text-pink-400" : "text-gray-700 hover:text-pink-700"}`}>
+      Politicas
+    </span>
+  </Link>
+  <Link href="/catalogo">
+    <span className={`cursor-pointer ${theme === "dark" ? "text-gray-200 hover:text-pink-400" : "text-gray-700 hover:text-pink-700"}`}>
+      Catalogo
+    </span>
+  </Link>
+</div>
+
+
+        <div className="flex items-center space-x-4">
+          <Link href="/cart" className={`flex items-center space-x-2 ${theme === "dark" ? "text-gray-200 hover:text-pink-400" : "text-gray-700 hover:text-pink-700"}`}>
+            <FaShoppingCart className="w-6 h-6 cursor-pointer" />
+            <span>Carrito</span>
+          </Link>
+
           <div className="relative" ref={dropdownRef}>
             <button
               onClick={toggleDropdown}
-              className="flex items-center space-x-2 text-gray-700 hover:text-pink-700"
+              className={`flex items-center space-x-2 ${theme === "dark" ? "text-gray-200 hover:text-pink-400" : "text-gray-700 hover:text-pink-700"
+                }`}
             >
               <FaUser className="w-6 h-6" />
               <span>{isAuthenticated ? user?.name : "Usuario"}</span>
@@ -121,9 +128,8 @@ function Navbar() {
               </svg>
             </button>
 
-            {/* Dropdown */}
             {dropdownOpen && (
-              <div className="absolute right-0 mt-2 w-64 bg-white shadow-lg rounded-lg py-4 z-50">
+              <div className={`absolute right-0 mt-2 w-64 shadow-lg rounded-lg py-4 z-50 ${theme === "dark" ? "bg-gray-800 text-gray-200" : "bg-white text-gray-700"}`}>
                 {!isAuthenticated ? (
                   <div className="flex justify-around items-center pb-4 border-b">
                     <Link href="/login">
@@ -141,70 +147,87 @@ function Navbar() {
                   <div className="px-4 py-2">
                     <p className="text-sm font-semibold">¡Hola, {user?.name}!</p>
                     <Link href="/profileuser">
-                      <p className="mt-2 font-semibold hover:text-pink-700 hover:font-semibold">
+                      <p className={`mt-2 font-semibold ${theme === "dark" ? "hover:text-pink-400" : "hover:text-pink-700"}`}>
                         Ver perfil
                       </p>
                     </Link>
-
-                    {user?.role === 'admin' && (
+                    {user?.role === "admin" && (
                       <div className="mt-4">
                         <button
                           onClick={toggleAdminMenu}
-                          className="w-full text-left font-semibold hover:text-pink-700 hover:font-bold"
+                          className={`w-full text-left font-semibold ${theme === "dark" ? "hover:text-pink-400" : "hover:text-pink-700"}`}
                         >
                           Opciones de Administrador
                         </button>
                         {adminMenuOpen && (
-                          <div className="mt-2 bg-gray-50 border-t border-gray-200">
+                          <div className={`mt-2 ${theme === "dark" ? "bg-gray-800 border-gray-700" : "bg-gray-50 border-gray-200"}`}>
                             <Link href="/adminDashboard">
-                              <p className="mt-2 hover:text-pink-700 hover:font-bold">
+                              <p className={`mt-2 ${theme === "dark" ? "hover:text-pink-400" : "hover:text-pink-700"}`}>
                                 Dashboard Admin
                               </p>
                             </Link>
                             <Link href="/adminUsuarios">
-                              <p className="mt-2 hover:text-pink-700 hover:font-bold" >
+                              <p className={`mt-2 ${theme === "dark" ? "hover:text-pink-400" : "hover:text-pink-700"}`}>
                                 Gestión de Usuarios
                               </p>
                             </Link>
                           </div>
                         )}
-                      </div>
-                    )}
-
-                    {user?.role === 'admin' && (
-                      <div className="mt-4">
-                        <button
-                          onClick={toggleDocumentAdminMenu}
-                          className="w-full text-left font-semibold hover:text-pink-700 hover:font-bold"
-                        >
-                          Gestion de Documentos
-                        </button>
-                        {documentAdminMenuOpen && (
-                          <div className="mt-2 bg-gray-50 border-t border-gray-200">
-                            <Link href="/adminDocumentos">
-                              <p className="mt-2 font-semibold hover:text-pink-700 hover:font-bold">
-                                Administrar Pepe
-                              </p>
-                            </Link>
-                            <Link href="/adminDocumentos2">
-                              <p className="mt-2 font-semibold hover:text-pink-700 hover:font-bold">
-                                Administrar Terminos
-                              </p>
-                            </Link>
-                            <Link href="/adminDocumentos3">
-                              <p className="mt-2 font-semibold hover:text-pink-700 hover:font-bold">
-                                Administrar Deslinde
-                              </p>
-                            </Link>
+                        {user?.role === "admin" && (
+                          <div className="mt-4">
+                            <button
+                              onClick={toggleDocumentAdminMenu}
+                              className={`w-full text-left font-semibold ${theme === "dark"
+                                ? "hover:text-pink-400"
+                                : "hover:text-pink-700"
+                                }`}
+                            >
+                              Gestión de Documentos
+                            </button>
+                            {documentAdminMenuOpen && (
+                              <div
+                                className={`mt-2 border-t ${theme === "dark"
+                                  ? "bg-gray-800 border-gray-700"
+                                  : "bg-gray-50 border-gray-200"
+                                  }`}
+                              >
+                                <Link href="/adminDocumentos">
+                                  <p
+                                    className={`mt-2 ${theme === "dark"
+                                      ? "hover:text-pink-400"
+                                      : "hover:text-pink-700"
+                                      }`}
+                                  >
+                                    Administrar Pepe
+                                  </p>
+                                </Link>
+                                <Link href="/adminDocumentos2">
+                                  <p
+                                    className={`mt-2 ${theme === "dark"
+                                      ? "hover:text-pink-400"
+                                      : "hover:text-pink-700"
+                                      }`}
+                                  >
+                                    Administrar Terminos
+                                  </p>
+                                </Link>
+                                <Link href="/adminDocumentos3">
+                                  <p
+                                    className={`mt-2 ${theme === "dark"
+                                      ? "hover:text-pink-400"
+                                      : "hover:text-pink-700"
+                                      }`}
+                                  >
+                                    Administrar Deslinde
+                                  </p>
+                                </Link>
+                              </div>
+                            )}
                           </div>
                         )}
                       </div>
                     )}
-
-                    <button
-                      onClick={handleLogout} // Llamar a la función logout
-                      className="mt-2 text-red-500 hover:text-red-400"
-                    >
+                    <button onClick={handleLogout} className="mt-2 text-red-500 hover:text-red-400">
                       Cerrar sesión
                     </button>
                   </div>
@@ -212,6 +235,17 @@ function Navbar() {
               </div>
             )}
           </div>
+
+          <button
+            onClick={toggleTheme}
+            className={`flex items-center justify-center ${theme === "dark" ? "text-yellow-400" : "text-gray-700 hover:text-yellow-600"}`}
+          >
+            {theme === "light" ? (
+              <FaMoon className="w-6 h-6" title="Modo Oscuro" />
+            ) : (
+              <FaSun className="w-6 h-6" title="Modo Claro" />
+            )}
+          </button>
         </div>
       </div>
     </nav>

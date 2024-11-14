@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useState, useEffect } from 'react';
 import { CONFIGURACIONES } from '../app/config/config'; // Importar las configuraciones
+
 // Crear el contexto de autenticación
 const AuthContext = createContext();
 
@@ -10,68 +11,100 @@ export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState(null);
 
-// Función para manejar el login
-const login = async (email, password) => {
-  try {
-    const response = await fetch(`${CONFIGURACIONES.BASEURL}/auth/login`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ email, password }),
-      credentials: 'include', // Importante para enviar las cookies de sesión al servidor
-    });
-
-    const data = await response.json();
-
-    if (response.ok) {
-      setIsAuthenticated(true);
-      setUser(data.user); // Aquí se establece la información del usuario (nombre, email, role, etc.)
-      localStorage.setItem('user', JSON.stringify(data.user)); // Guarda la información del usuario en localStorage
-      return { success: true };
-    } else {
-      return { success: false, message: data.message }; // Manejo de errores
+  // Función para obtener el tema inicial
+  const getInitialTheme = () => {
+    if (typeof window !== 'undefined' && window.localStorage) {
+      return localStorage.getItem('theme') || 'light';
     }
-  } catch (error) {
-    console.error('Error en la solicitud de login:', error);
-    return { success: false, message: 'Error interno del servidor' };
+    return 'light';
+  };
+
+  // Estado para el tema (claro/oscuro)
+  const [theme, setTheme] = useState('light');
+
+  // Función para alternar el tema  // Función para alternar el tema
+  const toggleTheme = () => {
+    const newTheme = theme === 'light' ? 'dark' : 'light';
+    setTheme(newTheme);
+    if (typeof window !== 'undefined' && window.localStorage) {
+      localStorage.setItem('theme', newTheme);
+    }
+  };
+
+
+
+// Actualizar el tema en el atributo `data-theme` y el fondo del `body`
+useEffect(() => {
+  const savedTheme = typeof window !== 'undefined' && window.localStorage.getItem('theme');
+  if (savedTheme) {
+    setTheme(savedTheme);  // Establecer el tema almacenado en `localStorage`
   }
-};
+}, []);
+
+useEffect(() => {
+  document.documentElement.setAttribute('data-theme', theme);
+  document.body.style.backgroundColor = theme === 'dark' ? '#1f2937' : '#ffffff';
+}, [theme]);
+
+  // Función para manejar el login en AuthProvider
+  const login = async (email, password) => {
+    try {
+      const response = await fetch(`${CONFIGURACIONES.BASEURL2}/auth/login`, { 
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+        credentials: 'include', 
+      });
+
+      const data = await response.json();
+      console.log(data);
+
+      if (response.ok) {
+        setIsAuthenticated(true);
+        setUser(data.user);
+        localStorage.setItem('user', JSON.stringify(data.user));
+        localStorage.setItem('token', data.token);
+        return { success: true };
+      } else {
+        return { success: false, message: data.message };
+      }
+    } catch (error) {
+      console.error('Error en la solicitud de login:', error);
+      return { success: false, message: 'Error interno del servidor' };
+    }
+  };
 
   // Función para verificar la sesión cuando la página se recarga
-// Función para verificar la sesión cuando la página se recarga
-const checkSession = async () => {
-  try {
-    const localUser = localStorage.getItem('user');
-    if (localUser) {
-      // Si el usuario ya está guardado en localStorage, cargarlo directamente
-      setUser(JSON.parse(localUser));
-      setIsAuthenticated(true);
+  const checkSession = async () => {
+    const storedToken = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+    if (!storedToken) {
+      setIsAuthenticated(false);
+      setUser(null);
       return;
     }
 
-    const response = await fetch(`${CONFIGURACIONES.BASEURL}/auth/check-session`, {
-      method: 'GET',
-      credentials: 'include', // Para mantener la cookie de la sesión
-    });
-    const data = await response.json();
+    try {
+      const response = await fetch(`${CONFIGURACIONES.BASEURL2}/auth/check-session`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${storedToken}`
+        },
+      });
 
-    if (response.ok && data.isAuthenticated) {
-      setIsAuthenticated(true);
-      setUser(data.user); // Recupera el usuario desde el backend, incluido su rol
-      localStorage.setItem('user', JSON.stringify(data.user)); // Guarda al usuario en localStorage
-    } else {
-      setIsAuthenticated(false);
-      setUser(null);
-      localStorage.removeItem('user'); // Limpia el localStorage si no hay sesión activa
+      const data = await response.json();
+      if (response.ok && data.isAuthenticated) {
+        setIsAuthenticated(true);
+        setUser(data.user);
+      } else {
+        logout();
+      }
+    } catch (error) {
+      console.error('Error verificando la sesión:', error);
+      logout();
     }
-  } catch (error) {
-    console.error('Error verificando la sesión:', error);
-    setIsAuthenticated(false);
-    setUser(null);
-    localStorage.removeItem('user'); // Limpia el localStorage en caso de error
-  }
-};
+  };
 
   // Verificar la sesión al cargar la aplicación o al recargar la página
   useEffect(() => {
@@ -79,29 +112,18 @@ const checkSession = async () => {
   }, []);
 
   // Función para cerrar sesión
-// Función para cerrar sesión
-const logout = async () => {
-  try {
-    const response = await fetch(`${CONFIGURACIONES.BASEURL}/auth/logout`, {
-      method: 'POST',
-      credentials: 'include', // Importante para cerrar la sesión correctamente en el servidor
-    });
-
-    if (response.ok) {
-      setIsAuthenticated(false);
-      setUser(null);
-      localStorage.removeItem('user'); // Limpia el localStorage al cerrar sesión
-    } else {
-      console.error('Error al cerrar sesión');
+  const logout = () => {
+    setIsAuthenticated(false);
+    setUser(null);
+    if (typeof window !== 'undefined' && window.localStorage) {
+      localStorage.removeItem('user');
+      localStorage.removeItem('token');
     }
-  } catch (error) {
-    console.error('Error en la solicitud de logout:', error);
-  }
-};
-
-
+    console.log('Sesión cerrada con éxito');
+  };
+  
   return (
-    <AuthContext.Provider value={{ isAuthenticated, user, login, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated, user, login, logout, theme, toggleTheme }}>
       {children}
     </AuthContext.Provider>
   );
