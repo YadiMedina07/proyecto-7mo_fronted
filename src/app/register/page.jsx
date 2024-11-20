@@ -24,7 +24,7 @@ function RegisterPage() {
   const [apellido, setApellido] = useState("");
   const [email, setEmail] = useState("");
   const [telefono, setTelefono] = useState("");
-  const [preguntaSecreta, setPreguntaSecreta] = useState("");
+  const [preguntaSecreta, setPreguntaSecreta] = useState("default");
   const [respuestaSecreta, setRespuestaSecreta] = useState("");
 
   // Función para manejar el token generado por el CAPTCHA
@@ -193,6 +193,15 @@ function RegisterPage() {
   const onSubmit = async (event) => {
     event.preventDefault();
     setOnSubmitLoading(true); // Mostrar loading al enviar
+    if (preguntaSecreta === "default") {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Por favor selecciona una pregunta secreta válida.",
+      });
+      setOnSubmitLoading(false); // Detener loading
+      return;
+    }
     try {
       const response = await fetch(`${CONFIGURACIONES.BASEURL2}/auth/signup`, {
         method: "POST",
@@ -316,7 +325,7 @@ function RegisterPage() {
               <label className={`${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>Fecha de Nacimiento</label>
               <input
                 type="date"
-                className={`w-full p-2 rounded-lg border ${theme === 'dark' ? 'bg-gray-700 border-gray-600 text-gray-200' : 'bg-white border-gray-300 text-gray-800'}`} 
+                className={`w-full p-2 rounded-lg border ${theme === 'dark' ? 'bg-gray-700 border-gray-600 text-gray-200' : 'bg-white border-gray-300 text-gray-800'}`}
                 value={birthDate}
                 onChange={handleBirthDateChange}
                 min="1960-01-01"
@@ -331,12 +340,15 @@ function RegisterPage() {
 
             {/* Pregunta Secreta */}
             <div className="mb-4">
-              <label className={`${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>Pregunta Secreta</label>
+              <label className="block text-gray-700">Pregunta Secreta</label>
               <select
                 value={preguntaSecreta}
                 onChange={(e) => setPreguntaSecreta(e.target.value)}
-                className={`w-full p-2 rounded-lg border ${theme === 'dark' ? 'bg-gray-700 border-gray-600 text-gray-200' : 'bg-white border-gray-300 text-gray-800'}`}
+                className="w-full border border-gray-300 p-2 rounded-lg"
               >
+                <option value="default" disabled>
+                  Selecciona una pregunta secreta
+                </option>
                 <option value="¿Cuál es el nombre de tu primera mascota?">
                   ¿Cuál es el nombre de tu primera mascota?
                 </option>
@@ -348,6 +360,7 @@ function RegisterPage() {
                 </option>
               </select>
             </div>
+
 
             {/* Respuesta Secreta */}
             <div className="mb-4">
@@ -396,7 +409,7 @@ function RegisterPage() {
 
             {/* Confirmar Contraseña */}
             <div className="mb-4 relative">
-            <label className={`${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+              <label className={`${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
                 Confirmar Contraseña
               </label>
               <input
@@ -424,10 +437,10 @@ function RegisterPage() {
             <div className="mb-4 text-sm">
               <p>Tu contraseña debe tener:</p>
               <ul className="list-disc pl-5">
-              <li className={`${password.length >= 8 && password.length <= 30 ? 'text-green-600' : 'text-gray-600'}`}>De 8 a 30 caracteres</li>
-            <li className={`${/\d/.test(password) ? 'text-green-600' : 'text-gray-600'}`}>Al menos 1 número</li>
-            <li className={`${/[a-zA-Z]/.test(password) ? 'text-green-600' : 'text-gray-600'}`}>Al menos 1 letra</li>
-            <li className={`${/[^A-Za-z0-9]/.test(password) ? 'text-green-600' : 'text-gray-600'}`}>Un símbolo especial</li>
+                <li className={`${password.length >= 8 && password.length <= 30 ? 'text-green-600' : 'text-gray-600'}`}>De 8 a 30 caracteres</li>
+                <li className={`${/\d/.test(password) ? 'text-green-600' : 'text-gray-600'}`}>Al menos 1 número</li>
+                <li className={`${/[a-zA-Z]/.test(password) ? 'text-green-600' : 'text-gray-600'}`}>Al menos 1 letra</li>
+                <li className={`${/[^A-Za-z0-9]/.test(password) ? 'text-green-600' : 'text-gray-600'}`}>Un símbolo especial</li>
               </ul>
             </div>
 
@@ -441,7 +454,7 @@ function RegisterPage() {
             {/* Botón de Crear Cuenta */}
             <button
               type="submit"
-              className={`w-full py-2 px-4 rounded-lg ${theme === 'dark' ? 'bg-pink-600 hover:bg-pink-500' : 'bg-pink-600 hover:bg-pink-500'} text-white`} 
+              className={`w-full py-2 px-4 rounded-lg ${theme === 'dark' ? 'bg-pink-600 hover:bg-pink-500' : 'bg-pink-600 hover:bg-pink-500'} text-white`}
               disabled={!passwordMatch || !recaptchaToken || onSubmitLoading} // Deshabilitar cuando está cargando
             >
               {onSubmitLoading ? "Cargando..." : "Crear Cuenta"}
@@ -450,7 +463,7 @@ function RegisterPage() {
             <span className={`text-xs mt-4 text-center ${theme === 'dark' ? 'text-gray-400' : 'text-black'}`}>
               ¿Ya tienes una cuenta?{" "}
               <Link href="/login">
-              <span className={`inline font-semibold ${theme === 'dark' ? 'text-blue-300 hover:text-blue-600' : 'text-blue-700'}`}>Ingresa aqui</span>
+                <span className={`inline font-semibold ${theme === 'dark' ? 'text-blue-300 hover:text-blue-600' : 'text-blue-700'}`}>Ingresa aqui</span>
               </Link>
             </span>
           </form>
