@@ -121,8 +121,8 @@ function AdminLogoPage() {
             isLoading
               ? "bg-gray-400"
               : theme === "dark"
-              ? "bg-green-600 text-white hover:bg-green-700"
-              : "bg-green-700 text-white hover:bg-green-800"
+              ? "bg-pink-600 text-white hover:bg-pink-700"
+              : "bg-pink-700 text-white hover:bg-pink-800"
           }`}
         >
           {isLoading ? "Subiendo..." : "Subir Logo"}

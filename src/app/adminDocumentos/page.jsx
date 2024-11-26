@@ -1,17 +1,20 @@
-'use client'; // Indica que es un componente del lado del cliente
+"use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import { useAuth } from "../../context/authContext";
-import { CONFIGURACIONES } from "../config/config"; // Importar las configuraciones
-
+import { CONFIGURACIONES } from "../config/config";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 function PrivacyPolicyPage() {
   const { user, isAuthenticated, theme } = useAuth();
-  const [policies, setPolicies] = useState([]); // Estado para la política actual
-  const [loading, setLoading] = useState(true); // Estado de carga
-  const [newPolicy, setNewPolicy] = useState({ title: "", content: "", effectiveDate: "" }); // Estado del formulario
-  const [previousVersions, setPreviousVersions] = useState([]); // Estado para guardar las versiones anteriores
-  const router = useRouter();
+  const [policies, setPolicies] = useState([]);
+  const [currentPolicy, setCurrentPolicy] = useState(null);
+  const [newPolicy, setNewPolicy] = useState({
+    title: "",
+    content: "",
+    effectiveDate: "",
+  });
+  const [editingPolicy, setEditingPolicy] = useState(null);
 
   useEffect(() => {
     if (!isAuthenticated || user?.role !== "admin") {
@@ -19,40 +22,76 @@ function PrivacyPolicyPage() {
     }
   }, [isAuthenticated, user]);
 
-  // Fetch de la política actual junto con las versiones anteriores
-  const fetchCurrentPolicyWithVersions = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      const response = await fetch(
-        `${CONFIGURACIONES.BASEURL2}/docs/privacy-policy/current-with-versions`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-          credentials: "include",
-        }
-      );
-
-      if (response.ok) {
-        const data = await response.json();
-        console.log("Datos de la política actual y versiones anteriores:", data);
-        setPolicies([data.currentPolicy]); // Configura la política actual
-        setPreviousVersions(data.previousVersions); // Configura las versiones anteriores
-        setLoading(false);
-      } else {
-        console.error("Error al obtener la política:", response.statusText);
-        setLoading(false);
+  // Obtener todas las políticas
+  const fetchPolicies = async () => {
+    const token = localStorage.getItem("token");
+    const response = await fetch(
+      `${CONFIGURACIONES.BASEURL2}/docs/privacy-policy`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
       }
-    } catch (error) {
-      console.error("Error al obtener la política:", error);
-      setLoading(false);
+    );
+    const data = await response.json();
+
+    // Verifica si data es un array, si no, lo transformas
+    if (Array.isArray(data)) {
+      setPolicies(data);
+    } else {
+      setPolicies([]);
+      console.error("La respuesta no es un array:", data);
     }
   };
 
-  // Crear o actualizar una política
-  const handleCreateOrUpdatePolicy = async () => {
+  // Obtener la política actual
+  const fetchCurrentPolicy = async () => {
+    const token = localStorage.getItem("token");
+    const response = await fetch(
+      `${CONFIGURACIONES.BASEURL2}/docs/privacy-policy/current`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (response.ok) {
+      const data = await response.json();
+      setCurrentPolicy(data); // Actualiza el estado de la política actual
+    } else {
+      console.error("Error al obtener la política actual");
+    }
+  };
+
+  useEffect(() => {
+    if (isAuthenticated && user?.role === "admin") {
+      fetchPolicies();
+      fetchCurrentPolicy();
+    }
+  }, [isAuthenticated, user]);
+
+  // Crear una nueva política
+  const handleCreatePolicy = async () => {
+    if (!newPolicy.title || !newPolicy.content || !newPolicy.effectiveDate) {
+      toast.error("Todos los campos son obligatorios.", {
+        position: "top-center",
+      });
+      return;
+    }
+
+    if (new Date(newPolicy.effectiveDate) < new Date()) {
+      toast.error(
+        "La fecha de vigencia no puede ser anterior a la fecha actual.",
+        { position: "top-center" }
+      );
+      return;
+    }
+
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(
@@ -68,28 +107,52 @@ function PrivacyPolicyPage() {
       );
 
       if (response.ok) {
-        await fetchCurrentPolicyWithVersions(); // Actualiza la lista
-        setNewPolicy({ title: "", content: "", effectiveDate: "" }); // Resetea el formulario
+        toast.success("Política creada exitosamente.", {
+          position: "top-center",
+        });
+        fetchPolicies();
+        fetchCurrentPolicy(); // Refresca la política actual
+        setNewPolicy({ title: "", content: "", effectiveDate: "" });
       } else {
-        console.error("Error al crear/actualizar la política:", response.statusText);
+        const errorData = await response.json();
+        toast.error(errorData.message, { position: "top-center" });
       }
     } catch (error) {
-      console.error("Error al crear/actualizar la política:", error);
+      toast.error("Error en el servidor.", { position: "top-center" });
     }
   };
-  
-  const handleDeleteVersion = async (index) => {
+
+  // Actualizar una política existente
+  const handleUpdatePolicy = async () => {
+    const token = localStorage.getItem("token");
     try {
-      const token = localStorage.getItem("token");
-      const currentPolicyId = policies[0]?._id; // Obtiene el ID de la política actual
-  
-      if (!currentPolicyId) {
-        console.error("No se encontró una política actual");
-        return;
-      }
-  
       const response = await fetch(
-        `${CONFIGURACIONES.BASEURL2}/docs/privacy-policy/${currentPolicyId}/previous-version/${index}`,
+        `${CONFIGURACIONES.BASEURL2}/docs/privacy-policy/${editingPolicy._id}`,
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(editingPolicy),
+        }
+      );
+      if (response.ok) {
+        setEditingPolicy(null);
+        fetchPolicies();
+        fetchCurrentPolicy(); // Refresca la política actual
+      }
+    } catch (error) {
+      console.error("Error al actualizar la política:", error);
+    }
+  };
+
+  // Eliminar una política
+  const handleDeletePolicy = async (id) => {
+    const token = localStorage.getItem("token");
+    try {
+      const response = await fetch(
+        `${CONFIGURACIONES.BASEURL2}/docs/privacy-policy/${id}`,
         {
           method: "DELETE",
           headers: {
@@ -98,145 +161,182 @@ function PrivacyPolicyPage() {
           },
         }
       );
-  
       if (response.ok) {
-        // Actualizar las versiones anteriores después de eliminar
-        const updatedPolicy = await response.json();
-        setPreviousVersions(updatedPolicy.policy.previousVersions);
-      } else {
-        console.error("Error al eliminar la versión:", response.statusText);
+        fetchPolicies();
+        fetchCurrentPolicy(); // Refresca la política actual
       }
     } catch (error) {
-      console.error("Error al eliminar la versión:", error);
+      console.error("Error al eliminar la política:", error);
     }
   };
-  
-  useEffect(() => {
-    if (isAuthenticated && user?.role === "admin") {
-      fetchCurrentPolicyWithVersions();
-    }
-  }, [isAuthenticated, user]);
 
-  if (loading) {
-    return <p className="text-center mt-20">Cargando políticas de privacidad...</p>;
-  }
+  // Establecer una política como actual
+  const handleSetCurrentPolicy = async (id) => {
+    const token = localStorage.getItem("token");
+    try {
+      const response = await fetch(
+        `${CONFIGURACIONES.BASEURL2}/docs/privacy-policy/${id}/set-current`,
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (response.ok) {
+        fetchPolicies();
+        fetchCurrentPolicy(); // Refresca la política actual
+      }
+    } catch (error) {
+      console.error("Error al establecer la política como actual:", error);
+    }
+  };
 
   return (
-    <div className={`w-full min-h-screen py-8 pt-36 flex justify-center ${theme === "dark" ? "bg-gray-900 text-gray-100" : "bg-white text-gray-900"}`}>
-      <div className="w-full max-w-4xl px-4">
-        <h1 className="text-3xl font-bold text-center mb-8 pt-10">Gestión de Política de Privacidad</h1>
+    <div
+      className={`container mx-auto py-8 pt-36 ${
+        theme === "dark"
+          ? "bg-gray-900 text-gray-100"
+          : "bg-white text-gray-900"
+      }`}
+    >
+      <h1 className="text-3xl font-bold text-center mb-8 pt-10">
+        Gestión de Política de Privacidad
+      </h1>
 
-        {/* Formulario para crear o actualizar una política */}
-        <div className={`${theme === "dark" ? "bg-gray-800" : "bg-white"} shadow-md rounded-lg overflow-hidden p-6 mb-8`}>
-          <h2 className="text-2xl font-bold mb-4">Crear Nueva Política de Privacidad</h2>
-          <div className="mb-4">
-            <label className={`block ${theme === "dark" ? "text-gray-300" : "text-gray-700"} mb-2`}>Título</label>
-            <input
-              type="text"
-              value={newPolicy.title}
-              onChange={(e) => setNewPolicy({ ...newPolicy, title: e.target.value })}
-              className={`w-full border ${theme === "dark" ? "border-gray-600 bg-gray-700 text-gray-100" : "border-gray-300 bg-white text-gray-900"} p-2 rounded-lg`}
-            />
-          </div>
-
-          <div className="mb-4">
-            <label className={`block ${theme === "dark" ? "text-gray-300" : "text-gray-700"} mb-2`}>Contenido</label>
-            <textarea
-              value={newPolicy.content}
-              onChange={(e) => setNewPolicy({ ...newPolicy, content: e.target.value })}
-              className={`w-full border ${theme === "dark" ? "border-gray-600 bg-gray-700 text-gray-100" : "border-gray-300 bg-white text-gray-900"} p-2 rounded-lg`}
-              rows="6"
-            ></textarea>
-          </div>
-
-          <div className="mb-4">
-            <label className={`block ${theme === "dark" ? "text-gray-300" : "text-gray-700"} mb-2`}>Fecha de Vigencia</label>
-            <input
-              type="date"
-              value={newPolicy.effectiveDate}
-              onChange={(e) => setNewPolicy({ ...newPolicy, effectiveDate: e.target.value })}
-              className={`w-full border ${theme === "dark" ? "border-gray-600 bg-gray-700 text-gray-100" : "border-gray-300 bg-white text-gray-900"} p-2 rounded-lg`}
-            />
-          </div>
-
-          <button
-            onClick={handleCreateOrUpdatePolicy}
-            className="bg-pink-700 text-white py-2 px-4 rounded hover:bg-pink-500"
-          >
-            Crear Política
-          </button>
+      {/* Crear o editar política */}
+      <div className={`${theme === "dark" ? "bg-gray-800" : "bg-white"} shadow-md rounded-lg overflow-hidden p-6 mb-8`}>
+        <h2 className="text-2xl font-bold mb-4">
+          {editingPolicy ? "Editar Política" : "Crear Nueva Política"}
+        </h2>
+        <div className="mb-4">
+          <label className={`block ${theme === "dark" ? "text-gray-300" : "text-gray-700"} mb-2`}>Título</label>
+          <input
+            type="text"
+            value={editingPolicy ? editingPolicy.title : newPolicy.title}
+            onChange={(e) =>
+              editingPolicy
+                ? setEditingPolicy({ ...editingPolicy, title: e.target.value })
+                : setNewPolicy({ ...newPolicy, title: e.target.value })
+            }
+            className="w-full border p-2 rounded-lg"
+          />
         </div>
-                {/* Tabla de versiones de la política de privacidad */}
-                <div className={`${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} shadow-md rounded-lg overflow-hidden p-6`}>
-          <h2 className="text-2xl font-bold mb-4">Versiones de la Política de Privacidad</h2>
+        <div className="mb-4">
+          <label className="block mb-2">Contenido</label>
+          <textarea
+            value={editingPolicy ? editingPolicy.content : newPolicy.content}
+            onChange={(e) =>
+              editingPolicy
+                ? setEditingPolicy({
+                    ...editingPolicy,
+                    content: e.target.value,
+                  })
+                : setNewPolicy({ ...newPolicy, content: e.target.value })
+            }
+            className="w-full border p-2 rounded-lg"
+            rows="6"
+          ></textarea>
+        </div>
+        <div className="mb-4">
+          <label className="block mb-2">Fecha de Vigencia</label>
+          <input
+            type="date"
+            value={
+              editingPolicy
+                ? editingPolicy.effectiveDate
+                : newPolicy.effectiveDate
+            }
+            onChange={(e) =>
+              editingPolicy
+                ? setEditingPolicy({
+                    ...editingPolicy,
+                    effectiveDate: e.target.value,
+                  })
+                : setNewPolicy({ ...newPolicy, effectiveDate: e.target.value })
+            }
+            className="w-full border p-2 rounded-lg"
+            min={new Date().toISOString().split("T")[0]} // Fecha actual como mínimo
+          />
+        </div>
+        <button
+          onClick={editingPolicy ? handleUpdatePolicy : handleCreatePolicy}
+          className="bg-pink-700 text-white py-2 px-4 rounded hover:bg-pink-500"
+        >
+          {editingPolicy ? "Guardar Cambios" : "Crear Política"}
+        </button>
+      </div>
 
-          <table className="min-w-full table-auto">
-            <thead>
-              <tr>
-                <th className={`px-4 py-2 border ${theme === 'dark' ? 'border-gray-700 text-gray-300' : 'border-gray-300 text-gray-700'}`}>Título</th>
-                <th className={`px-4 py-2 border ${theme === 'dark' ? 'border-gray-700 text-gray-300' : 'border-gray-300 text-gray-700'}`}>Fecha de Creación</th>
-                <th className={`px-4 py-2 border ${theme === 'dark' ? 'border-gray-700 text-gray-300' : 'border-gray-300 text-gray-700'}`}>Fecha de Vigencia</th>
-              </tr>
-            </thead>
-            <tbody>
-              {policies.length > 0 ? (
-                policies.map((policy) => (
-                  <tr key={policy._id}>
-                    <td className={`px-4 py-2 border ${theme === 'dark' ? 'border-gray-700 text-gray-300' : 'border-gray-300 text-gray-900'}`}>{policy.title}</td>
-                    <td className={`px-4 py-2 border ${theme === 'dark' ? 'border-gray-700 text-gray-300' : 'border-gray-300 text-gray-900'}`}>{new Date(policy.createdAt).toLocaleDateString()}</td>
-                    <td className={`px-4 py-2 border ${theme === 'dark' ? 'border-gray-700 text-gray-300' : 'border-gray-300 text-gray-900'}`}>{new Date(policy.effectiveDate).toLocaleDateString()}</td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan="3" className={`text-center py-4 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                    No hay políticas registradas
+      {/* Mostrar la política actual */}
+      {currentPolicy && (
+        <div className="mb-8 shadow-md rounded-lg p-6">
+          <h2 className="text-2xl font-bold mb-4">Política Actual</h2>
+          <p>
+            <strong>Título:</strong> {currentPolicy.title}
+          </p>
+          <p>
+            <strong>Contenido:</strong> {currentPolicy.content}
+          </p>
+          <p>
+            <strong>Fecha de Creación:</strong>{" "}
+            {new Date(currentPolicy.createdAt).toLocaleDateString()}
+          </p>
+          <p>
+            <strong>Fecha de Vigencia:</strong>{" "}
+            {new Date(currentPolicy.effectiveDate).toLocaleDateString()}
+          </p>
+        </div>
+      )}
+
+      {/* Listar políticas */}
+      <div className="shadow-md rounded-lg overflow-hidden p-6">
+        <h2 className="text-2xl font-bold mb-4">Listado de Políticas</h2>
+        <table className="min-w-full table-auto">
+          <thead>
+            <tr>
+              <th className="px-4 py-2">Título</th>
+              <th className="px-4 py-2">Fecha de Creación</th>
+              <th className="px-4 py-2">Fecha de Vigencia</th>
+              <th className="px-4 py-2">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {Array.isArray(policies) &&
+              policies.map((policy) => (
+                <tr key={policy._id}>
+                  <td className="px-4 py-2">{policy.title}</td>
+                  <td className="px-4 py-2">
+                    {new Date(policy.createdAt).toLocaleDateString()}
+                  </td>
+                  <td className="px-4 py-2">
+                    {new Date(policy.effectiveDate).toLocaleDateString()}
+                  </td>
+                  <td className="px-4 py-2">
+                    <button
+                      className="bg-yellow-500 text-white px-2 py-1 rounded mr-2 hover:bg-yellow-600"
+                      onClick={() => setEditingPolicy(policy)}
+                    >
+                      Editar
+                    </button>
+                    <button
+                      className="bg-blue-500 text-white px-2 py-1 rounded mr-2 hover:bg-blue-600"
+                      onClick={() => handleSetCurrentPolicy(policy._id)}
+                    >
+                      Establecer como Actual
+                    </button>
+                    <button
+                      className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
+                      onClick={() => handleDeletePolicy(policy._id)}
+                    >
+                      Eliminar
+                    </button>
                   </td>
                 </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+              ))}
+          </tbody>
+        </table>
 
-        {/* Tabla de historial de versiones */}
-        <div className={`${theme === "dark" ? "bg-gray-800" : "bg-white"} shadow-md rounded-lg overflow-hidden p-6`}>
-          <h2 className="text-2xl font-bold mb-4">Historial de Políticas de Privacidad</h2>
-          <table className="min-w-full table-auto">
-            <thead>
-              <tr>
-                <th className={`px-4 py-2 border ${theme === "dark" ? "border-gray-700 text-gray-300" : "border-gray-300 text-gray-700"}`}>Título</th>
-                <th className={`px-4 py-2 border ${theme === "dark" ? "border-gray-700 text-gray-300" : "border-gray-300 text-gray-700"}`}>Fecha de Creación</th>
-                <th className={`px-4 py-2 border ${theme === "dark" ? "border-gray-700 text-gray-300" : "border-gray-300 text-gray-700"}`}>Fecha de Vigencia</th>
-              </tr>
-            </thead>
-            <tbody>
-  {previousVersions.length > 0 ? (
-    previousVersions.map((version, index) => (
-      <tr key={index}>
-        <td className={`px-4 py-2 border ${theme === "dark" ? "border-gray-700 text-gray-300" : "border-gray-300 text-gray-900"}`}>{version.title}</td>
-        <td className={`px-4 py-2 border ${theme === "dark" ? "border-gray-700 text-gray-300" : "border-gray-300 text-gray-900"}`}>{new Date(version.createdAt).toLocaleDateString()}</td>
-        <td className={`px-4 py-2 border ${theme === "dark" ? "border-gray-700 text-gray-300" : "border-gray-300 text-gray-900"}`}>{new Date(version.effectiveDate).toLocaleDateString()}</td>
-        <td className={`px-4 py-2 border ${theme === "dark" ? "border-gray-700 text-gray-300" : "border-gray-300 text-gray-900"}`}>
-          <button
-            onClick={() => handleDeleteVersion(index)}
-            className="bg-red-500 text-white py-1 px-4 rounded hover:bg-red-600"
-          >
-            Eliminar
-          </button>
-        </td>
-      </tr>
-    ))
-  ) : (
-    <tr>
-      <td colSpan="4" className={`text-center py-4 ${theme === "dark" ? "text-gray-400" : "text-gray-600"}`}>
-        No hay versiones anteriores registradas.
-      </td>
-    </tr>
-  )}
-</tbody>
-
-          </table>
-        </div>
       </div>
     </div>
   );

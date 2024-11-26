@@ -205,7 +205,7 @@ function Navbar() {
                                       : "hover:text-pink-700"
                                       }`}
                                   >
-                                    Administrar Pepe
+                                    Administrar Politicas
                                   </p>
                                 </Link>
                                 <Link href="/adminDocumentos2">
