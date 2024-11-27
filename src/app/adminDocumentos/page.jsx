@@ -195,36 +195,71 @@ function PrivacyPolicyPage() {
 
   return (
     <div
-      className={`container mx-auto py-8 pt-36 ${
+      className={`container mx-auto py-8 pt-36 px-6 ${
         theme === "dark"
           ? "bg-gray-900 text-gray-100"
-          : "bg-white text-gray-900"
+          : "bg-gray-50 text-gray-900"
       }`}
     >
-      <h1 className="text-3xl font-bold text-center mb-8 pt-10">
+      <h1 className="text-4xl font-extrabold text-center mb-10 pt-10 text-pink-600">
         Gestión de Política de Privacidad
       </h1>
-
+  
       {/* Crear o editar política */}
-      <div className={`${theme === "dark" ? "bg-gray-800" : "bg-white"} shadow-md rounded-lg overflow-hidden p-6 mb-8`}>
-        <h2 className="text-2xl font-bold mb-4">
+      <div
+        className={`${
+          theme === "dark" ? "bg-gray-800" : "bg-white"
+        } shadow-lg rounded-lg p-8 mb-12 border ${
+          theme === "dark" ? "border-gray-700" : "border-pink-400"
+        }`}
+      >
+        <h2 className="text-2xl font-semibold mb-6 text-pink-700">
           {editingPolicy ? "Editar Política" : "Crear Nueva Política"}
         </h2>
-        <div className="mb-4">
-          <label className={`block ${theme === "dark" ? "text-gray-300" : "text-gray-700"} mb-2`}>Título</label>
-          <input
-            type="text"
-            value={editingPolicy ? editingPolicy.title : newPolicy.title}
-            onChange={(e) =>
-              editingPolicy
-                ? setEditingPolicy({ ...editingPolicy, title: e.target.value })
-                : setNewPolicy({ ...newPolicy, title: e.target.value })
-            }
-            className="w-full border p-2 rounded-lg"
-          />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label
+              className={`block text-lg font-medium ${
+                theme === "dark" ? "text-gray-300" : "text-gray-700"
+              } mb-2`}
+            >
+              Título
+            </label>
+            <input
+              type="text"
+              value={editingPolicy ? editingPolicy.title : newPolicy.title}
+              onChange={(e) =>
+                editingPolicy
+                  ? setEditingPolicy({ ...editingPolicy, title: e.target.value })
+                  : setNewPolicy({ ...newPolicy, title: e.target.value })
+              }
+              className="w-full border-2 border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
+            />
+          </div>
+          <div>
+            <label className="block text-lg font-medium mb-2">Fecha de Vigencia</label>
+            <input
+              type="date"
+              value={
+                editingPolicy
+                  ? editingPolicy.effectiveDate
+                  : newPolicy.effectiveDate
+              }
+              onChange={(e) =>
+                editingPolicy
+                  ? setEditingPolicy({
+                      ...editingPolicy,
+                      effectiveDate: e.target.value,
+                    })
+                  : setNewPolicy({ ...newPolicy, effectiveDate: e.target.value })
+              }
+              className="w-full border-2 border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
+              min={new Date().toISOString().split("T")[0]} // Fecha actual como mínimo
+            />
+          </div>
         </div>
-        <div className="mb-4">
-          <label className="block mb-2">Contenido</label>
+        <div className="mt-6">
+          <label className="block text-lg font-medium mb-2">Contenido</label>
           <textarea
             value={editingPolicy ? editingPolicy.content : newPolicy.content}
             onChange={(e) =>
@@ -235,50 +270,33 @@ function PrivacyPolicyPage() {
                   })
                 : setNewPolicy({ ...newPolicy, content: e.target.value })
             }
-            className="w-full border p-2 rounded-lg"
+            className="w-full border-2 border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
             rows="6"
           ></textarea>
         </div>
-        <div className="mb-4">
-          <label className="block mb-2">Fecha de Vigencia</label>
-          <input
-            type="date"
-            value={
-              editingPolicy
-                ? editingPolicy.effectiveDate
-                : newPolicy.effectiveDate
-            }
-            onChange={(e) =>
-              editingPolicy
-                ? setEditingPolicy({
-                    ...editingPolicy,
-                    effectiveDate: e.target.value,
-                  })
-                : setNewPolicy({ ...newPolicy, effectiveDate: e.target.value })
-            }
-            className="w-full border p-2 rounded-lg"
-            min={new Date().toISOString().split("T")[0]} // Fecha actual como mínimo
-          />
+        <div className="mt-6 flex justify-end">
+          <button
+            onClick={editingPolicy ? handleUpdatePolicy : handleCreatePolicy}
+            className="bg-pink-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-pink-500 shadow-md"
+          >
+            {editingPolicy ? "Guardar Cambios" : "Crear Política"}
+          </button>
         </div>
-        <button
-          onClick={editingPolicy ? handleUpdatePolicy : handleCreatePolicy}
-          className="bg-pink-700 text-white py-2 px-4 rounded hover:bg-pink-500"
-        >
-          {editingPolicy ? "Guardar Cambios" : "Crear Política"}
-        </button>
       </div>
-
+  
       {/* Mostrar la política actual */}
       {currentPolicy && (
-        <div className="mb-8 shadow-md rounded-lg p-6">
-          <h2 className="text-2xl font-bold mb-4">Política Actual</h2>
-          <p>
+        <div className="mb-12 shadow-lg rounded-lg p-8 bg-blue-50 border border-blue-400">
+          <h2 className="text-2xl font-bold mb-4 text-blue-700">
+            Política Actual
+          </h2>
+          <p className="mb-2">
             <strong>Título:</strong> {currentPolicy.title}
           </p>
-          <p>
+          <p className="mb-2">
             <strong>Contenido:</strong> {currentPolicy.content}
           </p>
-          <p>
+          <p className="mb-2">
             <strong>Fecha de Creación:</strong>{" "}
             {new Date(currentPolicy.createdAt).toLocaleDateString()}
           </p>
@@ -288,45 +306,51 @@ function PrivacyPolicyPage() {
           </p>
         </div>
       )}
-
+  
       {/* Listar políticas */}
-      <div className="shadow-md rounded-lg overflow-hidden p-6">
-        <h2 className="text-2xl font-bold mb-4">Listado de Políticas</h2>
-        <table className="min-w-full table-auto">
+      <div className="shadow-lg rounded-lg p-8 bg-white border border-gray-300">
+        <h2 className="text-2xl font-semibold mb-6 text-gray-700">
+          Listado de Políticas
+        </h2>
+        <table className="min-w-full table-auto border-collapse border border-gray-300">
           <thead>
-            <tr>
-              <th className="px-4 py-2">Título</th>
-              <th className="px-4 py-2">Fecha de Creación</th>
-              <th className="px-4 py-2">Fecha de Vigencia</th>
-              <th className="px-4 py-2">Acciones</th>
+            <tr className="bg-gray-200 text-gray-700">
+              <th className="px-4 py-2 border border-gray-300">Título</th>
+              <th className="px-4 py-2 border border-gray-300">
+                Fecha de Creación
+              </th>
+              <th className="px-4 py-2 border border-gray-300">
+                Fecha de Vigencia
+              </th>
+              <th className="px-4 py-2 border border-gray-300">Acciones</th>
             </tr>
           </thead>
           <tbody>
             {Array.isArray(policies) &&
               policies.map((policy) => (
-                <tr key={policy._id}>
-                  <td className="px-4 py-2">{policy.title}</td>
-                  <td className="px-4 py-2">
+                <tr key={policy._id} className="hover:bg-gray-100">
+                  <td className="px-4 py-2 border">{policy.title}</td>
+                  <td className="px-4 py-2 border">
                     {new Date(policy.createdAt).toLocaleDateString()}
                   </td>
-                  <td className="px-4 py-2">
+                  <td className="px-4 py-2 border">
                     {new Date(policy.effectiveDate).toLocaleDateString()}
                   </td>
-                  <td className="px-4 py-2">
+                  <td className="px-4 py-2 border">
                     <button
-                      className="bg-yellow-500 text-white px-2 py-1 rounded mr-2 hover:bg-yellow-600"
+                      className="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600"
                       onClick={() => setEditingPolicy(policy)}
                     >
                       Editar
                     </button>
                     <button
-                      className="bg-blue-500 text-white px-2 py-1 rounded mr-2 hover:bg-blue-600"
+                      className="bg-blue-500 text-white px-3 py-1 rounded mx-2 hover:bg-blue-600"
                       onClick={() => handleSetCurrentPolicy(policy._id)}
                     >
-                      Establecer como Actual
+                      Actual
                     </button>
                     <button
-                      className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
+                      className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
                       onClick={() => handleDeletePolicy(policy._id)}
                     >
                       Eliminar
@@ -336,10 +360,10 @@ function PrivacyPolicyPage() {
               ))}
           </tbody>
         </table>
-
       </div>
     </div>
   );
+  
 }
 
 export default PrivacyPolicyPage;

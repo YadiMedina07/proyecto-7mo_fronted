@@ -164,20 +164,36 @@ function AdminDashboard() {
   };
 
   return (
-    <div className={`w-full min-h-screen py-8 pt-36 ${theme === 'dark' ? 'bg-gray-900 text-gray-100' : 'bg-white text-gray-900'}`}>
-      <h1 className="text-3xl font-bold mb-8 text-center pt-10">
-        Dashboard Admin
+    <div
+      className={`w-full min-h-screen py-8 pt-36 ${
+        theme === "dark"
+          ? "bg-gray-900 text-gray-100"
+          : "bg-white text-gray-900"
+      }`}
+    >
+      <h1 className="text-4xl font-bold mb-8 text-center pt-10 text-pink-600">
+        ADMINISTRACION
       </h1>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+  
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {/* Usuarios Recientes */}
-        <div className={`shadow-md rounded-lg p-4 ${theme === 'dark' ? 'bg-gray-800' : 'bg-white'}`}>
-          <h2 className="text-xl font-semibold mb-4">Usuarios Recientes</h2>
+        <div
+          className={`shadow-lg rounded-lg p-6 ${
+            theme === "dark" ? "bg-gray-800" : "bg-pink-50"
+          } border border-pink-400`}
+        >
+          <h2 className="text-xl font-semibold mb-4 text-pink-700">
+            Usuarios Recientes
+          </h2>
           {recentUsers.length > 0 ? (
             recentUsers.map((user) => (
               <div
                 key={user._id}
-                className={`${theme === 'dark' ? 'bg-green-700 text-gray-100' : 'bg-green-200 text-gray-900'} rounded-lg p-4 mb-4 shadow`}
+                className={`${
+                  theme === "dark"
+                    ? "bg-pink-700 text-gray-100"
+                    : "bg-pink-100 text-gray-900"
+                } rounded-lg p-4 mb-4 shadow`}
               >
                 <p>
                   <strong>Nombre:</strong> {user.name}
@@ -192,20 +208,28 @@ function AdminDashboard() {
               </div>
             ))
           ) : (
-            <p>No hay usuarios recientes</p>
+            <p className="text-gray-600">No hay usuarios recientes</p>
           )}
         </div>
-
+  
         {/* Usuarios Bloqueados */}
-        <div className={`shadow-md rounded-lg p-4 ${theme === 'dark' ? 'bg-gray-800' : 'bg-white'}`}>
-          <h2 className="text-xl font-semibold mb-4">
+        <div
+          className={`shadow-lg rounded-lg p-6 ${
+            theme === "dark" ? "bg-gray-800" : "bg-red-50"
+          } border border-red-400`}
+        >
+          <h2 className="text-xl font-semibold mb-4 text-red-700">
             Usuarios Bloqueados Recientemente
           </h2>
           {blockedUsers.length > 0 ? (
             blockedUsers.map((user) => (
               <div
                 key={user.id}
-                className={`${theme === 'dark' ? 'bg-red-500 text-gray-100' : 'bg-red-200 text-gray-900'} rounded-lg p-4 mb-4 shadow`}
+                className={`${
+                  theme === "dark"
+                    ? "bg-red-600 text-gray-100"
+                    : "bg-red-100 text-gray-900"
+                } rounded-lg p-4 mb-4 shadow`}
               >
                 <p>
                   <strong>Nombre:</strong> {user.name}
@@ -223,18 +247,12 @@ function AdminDashboard() {
                   </p>
                 )}
                 <p>
-                  <strong>Actualmente Bloqueado:</strong>{" "}
-                  {user.currentlyBlocked
-                    ? "Sí"
-                    : "No (Desbloqueado Recientemente)"}
-                </p>
-                <p>
                   <strong>Última Actualización:</strong>{" "}
                   {new Date(user.lastUpdated).toLocaleString()}
                 </p>
                 {user.currentlyBlocked && (
                   <button
-                    className="bg-blue-500 text-white px-4 py-2 rounded mt-2"
+                    className="bg-pink-500 text-white px-4 py-2 rounded mt-2 hover:bg-pink-600"
                     onClick={() => unblockUser(user.id)}
                   >
                     Desbloquear
@@ -243,19 +261,28 @@ function AdminDashboard() {
               </div>
             ))
           ) : (
-            <p clas>No hay usuarios bloqueados</p>
+            <p className="text-gray-600">No hay usuarios bloqueados</p>
           )}
         </div>
+  
         {/* Intentos Fallidos */}
-        <div className={`shadow-md rounded-lg p-4 ${theme === 'dark' ? 'bg-gray-800' : 'bg-white'}`}>
-          <h2 className={`${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-            Recientes Intentos Fallidos
+        <div
+          className={`shadow-lg rounded-lg p-6 ${
+            theme === "dark" ? "bg-gray-800" : "bg-yellow-50"
+          } border border-yellow-400`}
+        >
+          <h2 className="text-xl font-semibold mb-4 text-yellow-700">
+            Intentos Fallidos Recientes
           </h2>
           {failedAttempts.length > 0 ? (
             failedAttempts.map((user) => (
               <div
                 key={user.id}
-                className="bg-yellow-200 rounded-lg p-4 mb-4 shadow"
+                className={`${
+                  theme === "dark"
+                    ? "bg-yellow-600 text-gray-100"
+                    : "bg-yellow-100 text-gray-900"
+                } rounded-lg p-4 mb-4 shadow`}
               >
                 <p>
                   <strong>Nombre:</strong> {user.name}
@@ -267,28 +294,36 @@ function AdminDashboard() {
                   <strong>Intentos Fallidos:</strong> {user.failedLoginAttempts}
                 </p>
                 <button
-                  className="bg-red-500 text-white px-4 py-2 rounded mt-2"
-                  onClick={() => blockUser(user.id)} // Aquí usamos el ID correcto
+                  className="bg-red-500 text-white px-4 py-2 rounded mt-2 hover:bg-red-600"
+                  onClick={() => blockUser(user.id)}
                 >
                   Bloquear
                 </button>
               </div>
             ))
           ) : (
-            <p>No hay intentos fallidos recientes</p>
+            <p className="text-gray-600">No hay intentos fallidos recientes</p>
           )}
         </div>
-
+  
         {/* Inicios de Sesión Recientes */}
-        <div className={`shadow-md rounded-lg p-4 ${theme === 'dark' ? 'bg-gray-800' : 'bg-white'}`}>
-          <h2 className="text-xl font-semibold mb-4">
+        <div
+          className={`shadow-lg rounded-lg p-6 ${
+            theme === "dark" ? "bg-gray-800" : "bg-blue-50"
+          } border border-blue-400`}
+        >
+          <h2 className="text-xl font-semibold mb-4 text-blue-700">
             Inicios de Sesión Recientes
           </h2>
           {recentLogins.length > 0 ? (
             recentLogins.map((login) => (
               <div
                 key={login._id}
-                className={`${theme === 'dark' ? 'bg-blue-500 text-gray-100' : 'bg-red-200 text-gray-900'} rounded-lg p-4 mb-4 shadow`}
+                className={`${
+                  theme === "dark"
+                    ? "bg-blue-600 text-gray-100"
+                    : "bg-blue-100 text-gray-900"
+                } rounded-lg p-4 mb-4 shadow`}
               >
                 <p>
                   <strong>Nombre:</strong> {login.name}
@@ -303,12 +338,13 @@ function AdminDashboard() {
               </div>
             ))
           ) : (
-            <p>No hay inicios de sesión recientes</p>
+            <p className="text-gray-600">No hay inicios de sesión recientes</p>
           )}
         </div>
       </div>
     </div>
   );
+  
 
 }
 
