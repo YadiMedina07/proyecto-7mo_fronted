@@ -338,7 +338,7 @@ function TermsPage() {
 {/* Botón Establecer como Actual o deshabilitado si ya es actual */}
 {term.isCurrent ? (
                       <button
-                        className="bg-gray-500 text-white px-2 py-1 rounded mr-2 cursor-not-allowed"
+                        className="bg-green-700 text-white px-2 py-1 rounded mr-2 cursor-not-allowed"
                         disabled
                       >
                         Actual
