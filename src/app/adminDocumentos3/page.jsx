@@ -344,12 +344,22 @@ function DeslindePage() {
                     >
                       Editar
                     </button>
-                    <button
-                      className="bg-blue-500 text-white px-3 py-1 rounded mx-2 hover:bg-blue-600"
-                      onClick={() => handleSetCurrentDeslinde(deslinde._id)}
-                    >
-                      Actual
-                    </button>
+{/* Botón Establecer como Actual o deshabilitado si ya es actual */}
+{deslinde.isCurrent ? (
+                      <button
+                        className="bg-gray-500 text-white px-2 py-1 rounded mr-2 cursor-not-allowed"
+                        disabled
+                      >
+                        Actual
+                      </button>
+                    ) : (
+                      <button
+                        className="bg-blue-500 text-white px-2 py-1 rounded mr-2 hover:bg-blue-600"
+                        onClick={() => handleSetCurrentDeslinde(deslinde._id)}
+                      >
+                        Establecer como Actual
+                      </button>
+                    )}
                     <button
                       className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
                       onClick={() => handleDeleteDeslinde(deslinde._id)}

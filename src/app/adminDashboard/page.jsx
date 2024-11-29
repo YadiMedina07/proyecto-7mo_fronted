@@ -10,6 +10,8 @@ function AdminDashboard() {
   const [blockedUsers, setBlockedUsers] = useState([]);
   const [failedAttempts, setFailedAttempts] = useState([]);
   const [recentLogins, setRecentLogins] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalData, setModalData] = useState({ email: "", duration: "" });
 
   useEffect(() => {
     // Verificar si el usuario es admin, si no redirigir manualmente
@@ -162,6 +164,44 @@ function AdminDashboard() {
       console.error("Error al desbloquear usuario:", error);
     }
   };
+    // Función para manejar el envío de datos del modal
+    const blockUserTemporarily = async ({ email, duration }) => {
+      const token = localStorage.getItem("token");
+      try {
+        const response = await fetch(
+          `${CONFIGURACIONES.BASEURL2}/auth/admin/block-user-temporarily`,
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ email, lockDuration: duration }), // Enviar email y duración
+          }
+        );
+    
+        if (response.ok) {
+          console.log("Usuario bloqueado temporalmente");
+          closeModal();
+        } else {
+          const data = await response.json();
+          console.error("Error al bloquear temporalmente:", data.message);
+        }
+      } catch (error) {
+        console.error("Error al bloquear temporalmente:", error);
+      }
+    };
+
+      // Función para abrir el modal
+  const openModal = (email) => {
+    setModalData({ email, duration: "" }); // Captura el correo del usuario
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setModalData({ email: null, duration: "" }); // Reinicia los datos del modal
+  };
 
   return (
     <div
@@ -297,7 +337,13 @@ function AdminDashboard() {
                   className="bg-red-500 text-white px-4 py-2 rounded mt-2 hover:bg-red-600"
                   onClick={() => blockUser(user.id)}
                 >
-                  Bloquear
+                  Bloquear permanentemente
+                </button>
+                <button
+                  onClick={() => openModal(user.email)} // Envía el email en lugar del ID
+                  className="bg-blue-500 text-white px-4 py-2 rounded mt-2 ml-2"
+                >
+                  Bloquear Temporalmente
                 </button>
               </div>
             ))
@@ -305,6 +351,46 @@ function AdminDashboard() {
             <p className="text-gray-600">No hay intentos fallidos recientes</p>
           )}
         </div>
+
+                {/* Modal */}
+                {isModalOpen && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+            <div className="bg-white rounded-lg p-6 shadow-lg w-1/3">
+              <h2 className="text-xl font-semibold mb-4">
+                Bloquear Temporalmente
+              </h2>
+              <p>
+                Ingresa la duración (en horas) para bloquear al usuario con ID:{" "}
+                <strong>{modalData.email}</strong>
+              </p>
+              <input
+                type="number"
+                className="w-full border rounded-lg p-2 mt-4"
+                placeholder="Duración en horas"
+                value={modalData.duration}
+                onChange={(e) =>
+                  setModalData({ ...modalData, duration: e.target.value })
+                }
+              />
+              <div className="flex justify-end mt-4">
+                <button
+                  onClick={closeModal}
+                  className="bg-gray-300 text-black px-4 py-2 rounded mr-2"
+                >
+                  Cancelar
+                </button>
+                <button
+                  onClick={() => blockUserTemporarily(modalData)} // Acción del modal
+                  className="bg-blue-500 text-white px-4 py-2 rounded"
+                >
+                  Bloquear
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+
   
         {/* Inicios de Sesión Recientes */}
         <div

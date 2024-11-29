@@ -154,7 +154,7 @@ function RegisterPage() {
   };
 
   //Funcion para patrones prohibidos
-  const forbiddenPatterns = ["12345", "password", "admin", "qwerty", "abc123"];
+  const forbiddenPatterns = ["12345", "password", "admin", "qwerty", "abc123", "abcdefgh123456@"];
 
   const checkPasswordInPwned = async (password) => {
     // 1. Hashear la contraseña usando SHA-1
@@ -193,6 +193,18 @@ function RegisterPage() {
   const onSubmit = async (event) => {
     event.preventDefault();
     setOnSubmitLoading(true); // Mostrar loading al enviar
+
+    // Validar la contraseña antes de hacer la solicitud
+    if (!isPasswordValid(password)) {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "La contraseña no cumple con los requisitos.",
+      });
+      setOnSubmitLoading(false); // Detener loading
+      return;
+    }
+
     if (preguntaSecreta === "default") {
       Swal.fire({
         icon: "error",
@@ -202,6 +214,7 @@ function RegisterPage() {
       setOnSubmitLoading(false); // Detener loading
       return;
     }
+
     try {
       const response = await fetch(`${CONFIGURACIONES.BASEURL2}/auth/signup`, {
         method: "POST",
@@ -241,12 +254,43 @@ function RegisterPage() {
     } catch (error) {
       Swal.fire({
         icon: "error",
-        title: "Error en el servidor",
-        text: "Ocurrió un error interno.",
+        title: "Error al registrar",
+        text: "Hubo un problema al registrar tu cuenta.",
       });
     } finally {
-      setOnSubmitLoading(false); // Dejar de mostrar loading
+      setOnSubmitLoading(false); // Detener loading
     }
+  };
+
+  // Función para validar la contraseña
+  const isPasswordValid = (password) => {
+    const minLength = 8;
+    const maxLength = 30;
+    const numberRegex = /\d/;
+    const letterRegex = /[a-zA-Z]/;
+    const specialCharRegex = /[^A-Za-z0-9]/;
+    const uppercaseRegex = /[A-Z]/;
+
+    // Comprobaciones de la contraseña
+    if (password.length < minLength || password.length > maxLength) {
+      setPasswordWarning("La contraseña debe tener entre 8 y 30 caracteres.");
+      return false;
+    } else if (!numberRegex.test(password)) {
+      setPasswordWarning("La contraseña debe contener al menos un número.");
+      return false;
+    } else if (!letterRegex.test(password)) {
+      setPasswordWarning("La contraseña debe contener al menos una letra.");
+      return false;
+    } else if (!specialCharRegex.test(password)) {
+      setPasswordWarning("La contraseña debe contener al menos un símbolo especial.");
+      return false;
+    } else if (!uppercaseRegex.test(password)) {
+      setPasswordWarning("La contraseña debe contener al menos una letra mayúscula.");
+      return false;
+    }
+
+    setPasswordWarning(""); // Si la contraseña es válida, limpiar la advertencia
+    return true;
   };
 
   return (
@@ -381,7 +425,10 @@ function RegisterPage() {
                 type={passwordVisible ? "text" : "password"} // Cambia entre "text" y "password"
                 placeholder="Contraseña"
                 value={password}
-                onChange={handlePasswordChange}
+                onChange={(e) => {
+                  handlePasswordChange(e); // Llama a handlePasswordChange
+                  validatePassword(e.target.value); // Llama a validatePassword para validar los requisitos de la contraseña
+                }}
                 className={`w-full p-2 rounded-lg border ${theme === 'dark' ? 'bg-gray-700 border-gray-600 text-gray-200' : 'bg-white border-gray-300 text-gray-800'}`}
               />
               <button
@@ -395,6 +442,8 @@ function RegisterPage() {
                 <p className="text-red-500 text-sm mt-1">{passwordWarning}</p>
               )}
             </div>
+
+
 
             {/* Barra de fortaleza */}
             <div className="mb-4">
@@ -441,9 +490,11 @@ function RegisterPage() {
                 <li className={`${/\d/.test(password) ? 'text-green-600' : 'text-gray-600'}`}>Al menos 1 número</li>
                 <li className={`${/[a-zA-Z]/.test(password) ? 'text-green-600' : 'text-gray-600'}`}>Al menos 1 letra</li>
                 <li className={`${/[^A-Za-z0-9]/.test(password) ? 'text-green-600' : 'text-gray-600'}`}>Un símbolo especial</li>
+                <li className={`${/[A-Z]/.test(password) ? 'text-green-600' : 'text-gray-600'}`}>
+                  Una mayúscula
+                </li>
               </ul>
             </div>
-
             <div className="mb-4">
               <ReCAPTCHA
                 sitekey="6Le0l2kqAAAAACYJHrkCQ6HwJrxjWSuj9e6NxIvY"
