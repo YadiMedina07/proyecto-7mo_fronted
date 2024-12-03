@@ -65,44 +65,44 @@ function Navbar() {
       </div>
       <div className="container mx-auto flex justify-between items-center py-2">
         <div className="flex items-center">
-        <Link href="/" className="flex items-center">
-        <Image
-          src={logoUrl || "/fallback-logo.png"}
-          alt="Corazon Logo"
-          width={100}
-          height={40}
-          className="object-contain"
-        />
-      </Link>
+          <Link href="/" className="flex items-center">
+            <Image
+              src={logoUrl || "/fallback-logo.png"}
+              alt="Corazon Logo"
+              width={100}
+              height={40}
+              className="object-contain"
+            />
+          </Link>
         </div>
 
         <div className="flex items-center space-x-4">
-  <Link href="/acercade">
-    <span className={`cursor-pointer ${theme === "dark" ? "text-gray-200 hover:text-pink-400" : "text-gray-700 hover:text-pink-700"}`}>
-      Acerca de nosotros
-    </span>
-  </Link>
-  <Link href="/servicios">
-    <span className={`cursor-pointer ${theme === "dark" ? "text-gray-200 hover:text-pink-400" : "text-gray-700 hover:text-pink-700"}`}>
-      Servicios
-    </span>
-  </Link>
-  <Link href="/contactos">
-    <span className={`cursor-pointer ${theme === "dark" ? "text-gray-200 hover:text-pink-400" : "text-gray-700 hover:text-pink-700"}`}>
-      Contactanos
-    </span>
-  </Link>
-  <Link href="/politicas">
-    <span className={`cursor-pointer ${theme === "dark" ? "text-gray-200 hover:text-pink-400" : "text-gray-700 hover:text-pink-700"}`}>
-      Politicas
-    </span>
-  </Link>
-  <Link href="/catalogo">
-    <span className={`cursor-pointer ${theme === "dark" ? "text-gray-200 hover:text-pink-400" : "text-gray-700 hover:text-pink-700"}`}>
-      Catalogo
-    </span>
-  </Link>
-</div>
+          <Link href="/acercade">
+            <span className={`cursor-pointer ${theme === "dark" ? "text-gray-200 hover:text-pink-400" : "text-gray-700 hover:text-pink-700"}`}>
+              Acerca de nosotros
+            </span>
+          </Link>
+          <Link href="/servicios">
+            <span className={`cursor-pointer ${theme === "dark" ? "text-gray-200 hover:text-pink-400" : "text-gray-700 hover:text-pink-700"}`}>
+              Servicios
+            </span>
+          </Link>
+          <Link href="/contactos">
+            <span className={`cursor-pointer ${theme === "dark" ? "text-gray-200 hover:text-pink-400" : "text-gray-700 hover:text-pink-700"}`}>
+              Contactanos
+            </span>
+          </Link>
+          <Link href="/politicas">
+            <span className={`cursor-pointer ${theme === "dark" ? "text-gray-200 hover:text-pink-400" : "text-gray-700 hover:text-pink-700"}`}>
+              Politicas
+            </span>
+          </Link>
+          <Link href="/catalogo">
+            <span className={`cursor-pointer ${theme === "dark" ? "text-gray-200 hover:text-pink-400" : "text-gray-700 hover:text-pink-700"}`}>
+              Catalogo
+            </span>
+          </Link>
+        </div>
 
 
         <div className="flex items-center space-x-4">
@@ -229,16 +229,15 @@ function Navbar() {
                                   </p>
                                 </Link>
                                 <Link href="/adminLogo">
-                                    <p
-                                      className={`mt-2 ${
-                                        theme === "dark"
-                                          ? "hover:text-yellow-400"
-                                          : "hover:text-green-700"
+                                  <p
+                                    className={`mt-2 ${theme === "dark"
+                                        ? "hover:text-yellow-400"
+                                        : "hover:text-green-700"
                                       }`}
-                                    >
-                                      Administrar Logo
-                                    </p>
-                                  </Link>
+                                  >
+                                    Administrar Logo
+                                  </p>
+                                </Link>
                               </div>
                             )}
                           </div>
