@@ -1,17 +1,9 @@
 "use client";
 
-import { useState, Suspense } from "react";
+import { Suspense, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useAuth } from "../../../../context/authContext";
 import Breadcrumbs from "../../../../components/Breadcrumbs";
-
-export default function DetalleProyeccionPage() {
-  return (
-    <Suspense fallback={<div>Cargando...</div>}>
-      <DetalleProyeccionPage />
-    </Suspense>
-  );
-}
 
 // Importar Chart y Bar de react-chartjs-2
 import {
@@ -28,7 +20,17 @@ import { Bar } from "react-chartjs-2";
 // Registrar componentes de Chart.js
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
+// Componente wrapper que envuelve al contenido en Suspense
 export default function DetalleProyeccionPage() {
+  return (
+    <Suspense fallback={<div>Cargando...</div>}>
+      <DetalleProyeccionContent />
+    </Suspense>
+  );
+}
+
+// Componente que contiene la lógica y el contenido de la página
+function DetalleProyeccionContent() {
   const { theme } = useAuth();
   const searchParams = useSearchParams();
 
@@ -39,10 +41,10 @@ export default function DetalleProyeccionPage() {
 
   // Estado para mostrar/ocultar el historial
   const [showHistorial, setShowHistorial] = useState(false);
-  // Estado para mostrar/ocultar tabla de proyecciones + gráfica
+  // Estado para mostrar/ocultar la gráfica
   const [showGrafica, setShowGrafica] = useState(false);
 
-  // Datos de ejemplo para el historial (tabla anterior)
+  // Datos de ejemplo para el historial
   const historialData = [
     {
       parametro: "Producción Inicial",
@@ -81,7 +83,7 @@ export default function DetalleProyeccionPage() {
     },
   ];
 
-  // Datos de ejemplo para la "Tabla de proyecciones"
+  // Datos de ejemplo para la tabla de proyecciones
   const proyeccionesData = [
     { semana: "Semana 1", produccion: 200, tiempo: 0, fechaEstimada: "16/03/2025" },
     { semana: "Semana 2", produccion: 250, tiempo: 1, fechaEstimada: "23/03/2025" },
@@ -90,11 +92,9 @@ export default function DetalleProyeccionPage() {
     { semana: "Semana 5", produccion: 400, tiempo: 4, fechaEstimada: "13/04/2025" },
   ];
 
-  // Datos para la gráfica (ejemplo)
+  // Datos para la gráfica
   const chartLabels = proyeccionesData.map((item) => item.semana);
-  // Producción real (puede ser la misma que la tabla o distinto)
   const dataProduccionReal = [200, 250, 300, 350, 400];
-  // Producción estimada
   const dataProduccionEstimada = [220, 270, 320, 370, 420];
 
   const chartData = {
@@ -103,12 +103,12 @@ export default function DetalleProyeccionPage() {
       {
         label: "Producción Real",
         data: dataProduccionReal,
-        backgroundColor: "rgba(255, 99, 132, 0.5)", // Rosa/rojo
+        backgroundColor: "rgba(255, 99, 132, 0.5)",
       },
       {
         label: "Producción Estimada",
         data: dataProduccionEstimada,
-        backgroundColor: "rgba(53, 162, 235, 0.5)", // Azul
+        backgroundColor: "rgba(53, 162, 235, 0.5)",
       },
     ],
   };
@@ -188,14 +188,12 @@ export default function DetalleProyeccionPage() {
             </p>
           </div>
           <div className="text-center mt-6 flex flex-col gap-4">
-            {/* Botón para mostrar/ocultar historial */}
             <button
               onClick={() => setShowHistorial(!showHistorial)}
               className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
             >
               {showHistorial ? "Ocultar historial" : "Historial de producción"}
             </button>
-            {/* Botón para mostrar/ocultar gráfica */}
             <button
               onClick={() => setShowGrafica(!showGrafica)}
               className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition"
@@ -206,13 +204,12 @@ export default function DetalleProyeccionPage() {
         </div>
       </div>
 
-      {/* Sección Historial (tabla) - Se muestra solo si showHistorial === true */}
+      {/* Sección Historial */}
       {showHistorial && (
         <div className="max-w-5xl mx-auto mt-8">
           <h2 className="text-2xl font-bold mb-4 text-center">
             Historial de Inventario
           </h2>
-
           <div className="overflow-x-auto">
             <table className="w-full border-collapse text-center">
               <thead className="bg-pink-200">
@@ -254,10 +251,9 @@ export default function DetalleProyeccionPage() {
         </div>
       )}
 
-      {/* Sección Tabla de proyecciones + Gráfica - Se muestra solo si showGrafica === true */}
+      {/* Sección Tabla de proyecciones y Gráfica */}
       {showGrafica && (
         <div className="max-w-5xl mx-auto mt-8">
-          {/* Tabla de proyecciones */}
           <h2 className="text-2xl font-bold mb-4 text-center">Tabla de proyecciones</h2>
           <div className="overflow-x-auto mb-8">
             <table className="w-full border-collapse text-center">
@@ -293,9 +289,9 @@ export default function DetalleProyeccionPage() {
               </tbody>
             </table>
           </div>
-
-          {/* Gráfica de proyección */}
-          <h2 className="text-2xl font-bold mb-4 text-center">Gráfico de proyección</h2>
+          <h2 className="text-2xl font-bold mb-4 text-center">
+            Gráfico de proyección
+          </h2>
           <div className="bg-pink-100 p-4 rounded-lg">
             <Bar options={chartOptions} data={chartData} />
           </div>
@@ -304,4 +300,3 @@ export default function DetalleProyeccionPage() {
     </div>
   );
 }
-
