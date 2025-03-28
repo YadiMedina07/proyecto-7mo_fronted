@@ -1,76 +1,156 @@
-"use client"; // Para asegurar que es un componente del cliente
-//este es el que manda
+"use client";
+
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { CONFIGURACIONES } from '../config/config';
 import { useAuth } from '../../context/authContext';
+
 function RequestPasswordResetPage() {
   const { theme } = useAuth();
+  const router = useRouter();
+
   const [email, setEmail] = useState('');
+  const [telefono, setTelefono] = useState('');
+  const [preguntaSecreta, setPreguntaSecreta] = useState('');
+  const [respuestaSecreta, setRespuestaSecreta] = useState('');
+  const [method, setMethod] = useState('email'); // 'email' o 'secretQuestion'
+  const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
 
-  const handleEmailChange = (e) => {
-    setEmail(e.target.value);
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (!email) {
-      setError('Por favor, ingresa un correo válido');
-      return;
-    }
+    setLoading(true);
+    setError('');
+    setMessage('');
 
     try {
-      const response = await fetch(`${CONFIGURACIONES. BASEURL2}/auth/send-reset-email`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email }),
-      });
+      let response;
+      if (method === 'email') {
+        response = await fetch(`${CONFIGURACIONES.BASEURL2}/auth/send-reset-email`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email })
+        });
+      } else {
+        response = await fetch(`${CONFIGURACIONES.BASEURL2}/auth/verify-secret-question`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, telefono, respuestaSecreta })
+        });
+      }
+
+      const data = await response.json();
 
       if (response.ok) {
-        setMessage('Correo enviado con éxito, revisa tu bandeja de entrada');
-        setError(''); // Limpiar error si es exitoso
+        if (method === 'email') {
+          setMessage('Correo enviado con éxito. Revisa tu bandeja de entrada.');
+        } else {
+          router.push(`/restorepassword/${data.token}`);
+        }
       } else {
-        const result = await response.json();
-        setError(result.message || 'No se pudo enviar el correo');
+        setError(data.message || 'Ocurrió un error.');
       }
-    } catch (error) {
-      setError('Hubo un problema enviando el correo de recuperación.');
+    } catch (err) {
+      setError('Error al conectar con el servidor.');
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className={`min-h-screen flex items-center justify-center ${theme === 'dark' ? 'bg-gray-900' : 'bg-gray-100'}`}>
-      <div className={`w-full max-w-md ${theme === 'dark' ? 'bg-gray-800 text-gray-100' : 'bg-white text-gray-900'} p-8 rounded-lg shadow-md`}>
-        <h2 className="text-2xl font-bold text-center mb-6">Restablecer Contraseña</h2>
-        
-        {message && (
-          <p className="text-green-500 text-center mb-4">{message}</p>
-        )}
+    <div
+      className={`
+        // Quita el flex vertical y agrega un padding top grande
+        pt-36 
+        min-h-screen 
+        ${theme === 'dark' ? 'bg-gray-900 text-gray-100' : 'bg-gray-100 text-gray-900'}
+      `}
+    >
+      {/* Contenedor centrado horizontalmente */}
+      <div className="max-w-md mx-auto p-6 border rounded bg-white dark:bg-gray-200 dark:text-gray-900 shadow-sm">
+        <h2 className="text-2xl font-bold mb-4">Restablecer Contraseña</h2>
 
-        {error && (
-          <p className="text-red-500 text-center mb-4">{error}</p>
-        )}
+        {/* Selector de método */}
+        <div className="mb-4">
+          <button
+            onClick={() => setMethod('email')}
+            className={`mr-2 ${method === 'email' ? 'font-bold' : ''}`}
+          >
+            Por correo
+          </button>
+          <button
+            onClick={() => setMethod('secretQuestion')}
+            className={`${method === 'secretQuestion' ? 'font-bold' : ''}`}
+          >
+            Por pregunta secreta
+          </button>
+        </div>
+
+        {message && <p className="mb-4 text-pink-600">{message}</p>}
+        {error && <p className="mb-4 text-red-600">{error}</p>}
 
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label className={`block ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>Correo electrónico</label>
+            <label className="block mb-1">Correo electrónico</label>
             <input
               type="email"
-              placeholder="Ingresa tu correo electrónico"
               value={email}
-              onChange={handleEmailChange}
-              className={`w-full border ${theme === 'dark' ? 'border-gray-600 bg-gray-700 text-gray-100' : 'border-gray-300 bg-white text-gray-900'} p-2 rounded-lg`}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full p-2 border rounded"
+              placeholder="tucorreo@ejemplo.com"
               required
             />
           </div>
 
+          {method === 'secretQuestion' && (
+            <>
+              <div className="mb-4">
+                <label className="block mb-1">Teléfono registrado</label>
+                <input
+                  type="tel"
+                  value={telefono}
+                  onChange={(e) => setTelefono(e.target.value)}
+                  className="w-full p-2 border rounded"
+                  placeholder="10 dígitos"
+                  maxLength="10"
+                  required
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block mb-1">Pregunta secreta</label>
+                <select
+                  value={preguntaSecreta}
+                  onChange={(e) => setPreguntaSecreta(e.target.value)}
+                  className="w-full p-2 border rounded"
+                  required
+                >
+                  <option value="" disabled>Selecciona tu pregunta secreta</option>
+                  <option value="¿Cuál es el nombre de tu primera mascota?">¿Cuál es el nombre de tu primera mascota?</option>
+                  <option value="¿Cuál es tu película favorita?">¿Cuál es tu película favorita?</option>
+                  <option value="¿En qué ciudad naciste?">¿En qué ciudad naciste?</option>
+                </select>
+              </div>
+              <div className="mb-4">
+                <label className="block mb-1">Respuesta secreta</label>
+                <input
+                  type="text"
+                  value={respuestaSecreta}
+                  onChange={(e) => setRespuestaSecreta(e.target.value)}
+                  className="w-full p-2 border rounded"
+                  placeholder="Tu respuesta"
+                  required
+                />
+              </div>
+            </>
+          )}
+
           <button
             type="submit"
-            className="w-full bg-pink-700 text-white py-2 px-4 rounded-lg hover:bg-pink-500"
+            disabled={loading}
+            className="w-full py-2 px-4 bg-pink-600 text-white rounded"
           >
-            Enviar enlace de restablecimiento
+            {loading ? 'Procesando...' : (method === 'email' ? 'Enviar enlace' : 'Verificar respuesta')}
           </button>
         </form>
       </div>

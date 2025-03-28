@@ -1,4 +1,3 @@
-
 "use client";
 import { useState } from "react";
 
@@ -33,8 +32,8 @@ export default function FAQPage() {
   ];
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 px-10 text-center pt-48">
-      <h1 className="text-4xl font-bold mb-16 text-gray-800">Preguntas Frecuentes</h1>
+    <div className="container mx-auto p-6 pt-20">
+      <h1 className="text-3xl font-bold text-center mb-6">Preguntas Frecuentes</h1>
 
       <div className="max-w-2xl mx-auto">
         {faqs.map((faq, index) => (

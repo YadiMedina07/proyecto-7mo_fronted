@@ -25,13 +25,10 @@ function TermsPage() {
 
   // Obtener todos los términos
   const fetchTerms = async () => {
-    const token = localStorage.getItem("token");
+
     const response = await fetch(`${CONFIGURACIONES.BASEURL2}/docs/terms`, {
       method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
+      credentials: "include", // Enviar cookie con el token
     });
     const data = await response.json();
 
@@ -50,10 +47,7 @@ function TermsPage() {
       `${CONFIGURACIONES.BASEURL2}/docs/terms/current`,
       {
         method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
+        credentials: "include", // Enviar cookie con el token
       }
     );
 
@@ -90,11 +84,10 @@ function TermsPage() {
     }
 
     try {
-      const token = localStorage.getItem("token");
       const response = await fetch(`${CONFIGURACIONES.BASEURL2}/docs/terms`, {
         method: "POST",
+        credentials: "include", // Cookie
         headers: {
-          Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify(newTerms),
@@ -118,14 +111,13 @@ function TermsPage() {
 
   // Actualizar términos existentes
   const handleUpdateTerms = async () => {
-    const token = localStorage.getItem("token");
     try {
       const response = await fetch(
-        `${CONFIGURACIONES.BASEURL2}/docs/terms/${editingTerms._id}`,
+        `${CONFIGURACIONES.BASEURL2}/docs/terms/${editingTerms.id}`,
         {
           method: "PUT",
+          credentials: "include", // Cookie
           headers: {
-            Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
           body: JSON.stringify(editingTerms),
@@ -135,6 +127,8 @@ function TermsPage() {
         setEditingTerms(null);
         fetchTerms();
         fetchCurrentTerms();
+      } else {
+        console.error("Error al actualizar los términos");
       }
     } catch (error) {
       console.error("Error al actualizar los términos:", error);
@@ -143,16 +137,12 @@ function TermsPage() {
 
   // Eliminar términos
   const handleDeleteTerms = async (id) => {
-    const token = localStorage.getItem("token");
     try {
       const response = await fetch(
         `${CONFIGURACIONES.BASEURL2}/docs/terms/${id}`,
         {
           method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
+          credentials: "include", // Cookie
         }
       );
       if (response.ok) {
@@ -166,14 +156,18 @@ function TermsPage() {
 
   // Establecer términos como actuales
   const handleSetCurrentTerms = async (id) => {
-    const token = localStorage.getItem("token");
+    // Validar que el id esté definido y sea un valor válido
+    if (!id) {
+      console.error("El ID de los términos no está definido");
+      return;
+    }
     try {
       const response = await fetch(
         `${CONFIGURACIONES.BASEURL2}/docs/terms/${id}/set-current`,
         {
           method: "PUT",
+          credentials: "include", // Se envían las cookies
           headers: {
-            Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
         }
@@ -181,31 +175,32 @@ function TermsPage() {
       if (response.ok) {
         fetchTerms();
         fetchCurrentTerms();
+      } else {
+        const errorData = await response.json();
+        console.error("Error en la respuesta:", errorData);
       }
     } catch (error) {
       console.error("Error al establecer los términos como actuales:", error);
     }
   };
 
+
   return (
     <div
-      className={`container mx-auto py-8 pt-36 px-6 ${
-        theme === "dark"
+      className={`container mx-auto py-8 pt-36 px-6 ${theme === "dark"
           ? "bg-gray-900 text-gray-100"
           : "bg-gray-50 text-gray-900"
-      }`}
+        }`}
     >
       <h1 className="text-4xl font-extrabold text-center mb-10 pt-10 text-pink-600">
         Gestión de Términos y Condiciones
       </h1>
-  
+
       {/* Crear o editar términos */}
       <div
-        className={`${
-          theme === "dark" ? "bg-gray-800" : "bg-white"
-        } shadow-lg rounded-lg p-8 mb-12 border ${
-          theme === "dark" ? "border-gray-700" : "border-pink-400"
-        }`}
+        className={`${theme === "dark" ? "bg-gray-800" : "bg-white"
+          } shadow-lg rounded-lg p-8 mb-12 border ${theme === "dark" ? "border-gray-700" : "border-pink-400"
+          }`}
       >
         <h2 className="text-2xl font-semibold mb-6 text-pink-700">
           {editingTerms ? "Editar Términos" : "Crear Nuevos Términos"}
@@ -213,9 +208,8 @@ function TermsPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <label
-              className={`block text-lg font-medium ${
-                theme === "dark" ? "text-gray-300" : "text-gray-700"
-              } mb-2`}
+              className={`block text-lg font-medium ${theme === "dark" ? "text-gray-300" : "text-gray-700"
+                } mb-2`}
             >
               Título
             </label>
@@ -240,9 +234,9 @@ function TermsPage() {
               onChange={(e) =>
                 editingTerms
                   ? setEditingTerms({
-                      ...editingTerms,
-                      effectiveDate: e.target.value,
-                    })
+                    ...editingTerms,
+                    effectiveDate: e.target.value,
+                  })
                   : setNewTerms({ ...newTerms, effectiveDate: e.target.value })
               }
               className="w-full border-2 border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
@@ -257,9 +251,9 @@ function TermsPage() {
             onChange={(e) =>
               editingTerms
                 ? setEditingTerms({
-                    ...editingTerms,
-                    content: e.target.value,
-                  })
+                  ...editingTerms,
+                  content: e.target.value,
+                })
                 : setNewTerms({ ...newTerms, content: e.target.value })
             }
             className="w-full border-2 border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
@@ -275,7 +269,7 @@ function TermsPage() {
           </button>
         </div>
       </div>
-  
+
       {/* Mostrar los términos actuales */}
       {currentTerms && (
         <div className="mb-12 shadow-lg rounded-lg p-8 bg-blue-50 border border-blue-400">
@@ -298,7 +292,7 @@ function TermsPage() {
           </p>
         </div>
       )}
-  
+
       {/* Listar términos */}
       <div className="shadow-lg rounded-lg p-8 bg-white border border-gray-300">
         <h2 className="text-2xl font-semibold mb-6 text-gray-700">
@@ -320,7 +314,7 @@ function TermsPage() {
           <tbody>
             {Array.isArray(terms) &&
               terms.map((term) => (
-                <tr key={term._id} className="hover:bg-gray-100">
+                <tr key={term.id} className="hover:bg-gray-100">
                   <td className="px-4 py-2 border">{term.title}</td>
                   <td className="px-4 py-2 border">
                     {new Date(term.createdAt).toLocaleDateString()}
@@ -335,8 +329,8 @@ function TermsPage() {
                     >
                       Editar
                     </button>
-{/* Botón Establecer como Actual o deshabilitado si ya es actual */}
-{term.isCurrent ? (
+                    {/* Botón Establecer como Actual o deshabilitado si ya es actual */}
+                    {term.isCurrent ? (
                       <button
                         className="bg-green-700 text-white px-2 py-1 rounded mr-2 cursor-not-allowed"
                         disabled
@@ -346,14 +340,14 @@ function TermsPage() {
                     ) : (
                       <button
                         className="bg-blue-500 text-white px-2 py-1 rounded mr-2 hover:bg-blue-600"
-                        onClick={() => handleSetCurrentTerms(term._id)}
+                        onClick={() => handleSetCurrentTerms(term.id)}
                       >
                         Establecer como Actual
                       </button>
-                    )}
+                    )}
                     <button
                       className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
-                      onClick={() => handleDeleteTerms(term._id)}
+                      onClick={() => handleDeleteTerms(term.id)}
                     >
                       Eliminar
                     </button>
@@ -365,7 +359,7 @@ function TermsPage() {
       </div>
     </div>
   );
-  
+
 }
 
 export default TermsPage;

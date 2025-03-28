@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import CryptoJS from "crypto-js";
-import ReCAPTCHA from "react-google-recaptcha";
+import ReCAPTCHA from 'react-google-recaptcha';
 import Swal from 'sweetalert2';
 import { useRouter } from 'next/navigation'; // Importa useRouter
 import { CONFIGURACIONES } from '../config/config';
@@ -30,6 +30,12 @@ function RegisterPage() {
   // Función para manejar el token generado por el CAPTCHA
   const handleRecaptchaChange = (token) => {
     setRecaptchaToken(token); // Almacena el token generado por el CAPTCHA
+  };
+  //validar nombre y apellido
+
+  const validarNombreApellido = (valor) => {
+    const regex = /^[A-Za-zÁáÉéÍíÓóÚúÜüÑñ\s]+$/; // Expresión regular para solo letras y espacios
+    return valor.length > 3 && regex.test(valor);
   };
 
   // Función para validar los requisitos de la contraseña
@@ -189,22 +195,30 @@ function RegisterPage() {
   const router = useRouter(); // Inicializa el hook de enrutamiento
   //const router = useRouter(); // Hook para redireccionar
 
-  // Función para manejar el envío del formulario al backend
   const onSubmit = async (event) => {
     event.preventDefault();
-    setOnSubmitLoading(true); // Mostrar loading al enviar
-
-    // Validar la contraseña antes de hacer la solicitud
-    if (!isPasswordValid(password)) {
+  
+    // Validar nombre y apellido
+    if (!validarNombreApellido(nombre)) {
       Swal.fire({
         icon: "error",
         title: "Oops...",
-        text: "La contraseña no cumple con los requisitos.",
+        text: "El nombre debe tener más de 3 caracteres y solo contener letras.",
       });
-      setOnSubmitLoading(false); // Detener loading
       return;
     }
-
+  
+    if (!validarNombreApellido(apellido)) {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "El apellido debe tener más de 3 caracteres y solo contener letras.",
+      });
+      return;
+    }
+  
+    setOnSubmitLoading(true); // Mostrar loading al enviar
+  
     if (preguntaSecreta === "default") {
       Swal.fire({
         icon: "error",
@@ -214,7 +228,7 @@ function RegisterPage() {
       setOnSubmitLoading(false); // Detener loading
       return;
     }
-
+  
     try {
       const response = await fetch(`${CONFIGURACIONES.BASEURL2}/auth/signup`, {
         method: "POST",
@@ -233,7 +247,7 @@ function RegisterPage() {
           respuestaSecreta,
         }),
       });
-
+  
       const data = await response.json();
       if (response.ok) {
         Swal.fire({
@@ -242,7 +256,7 @@ function RegisterPage() {
           text: "¡Te has registrado con éxito!",
         }).then(() => {
           // Redireccionar al login después de que el usuario haga clic en "OK"
-          router.push('/login');
+          router.push("/login");
         });
       } else {
         Swal.fire({
@@ -254,11 +268,11 @@ function RegisterPage() {
     } catch (error) {
       Swal.fire({
         icon: "error",
-        title: "Error al registrar",
-        text: "Hubo un problema al registrar tu cuenta.",
+        title: "Error en el servidor",
+        text: "Ocurrió un error interno.",
       });
     } finally {
-      setOnSubmitLoading(false); // Detener loading
+      setOnSubmitLoading(false); // Dejar de mostrar loading
     }
   };
 
@@ -311,25 +325,37 @@ function RegisterPage() {
           <form onSubmit={onSubmit}>
             {/* Nombre */}
             <div className="mb-4">
-              <label className={`${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>Nombre</label>
+              <label className="block text-gray-700">Nombre</label>
               <input
                 type="text"
                 placeholder="Nombre"
                 value={nombre}
                 onChange={(e) => setNombre(e.target.value)}
-                className={`w-full p-2 rounded-lg border ${theme === 'dark' ? 'bg-gray-700 border-gray-600 text-gray-200' : 'bg-white border-gray-300 text-gray-800'}`} />
+                className="w-full border border-gray-300 p-2 rounded-lg"
+              />
+              {nombre && !validarNombreApellido(nombre) && (
+                <p className="text-red-500 text-sm">
+                  El nombre debe tener más de 3 caracteres y solo contener letras.
+                </p>
+              )}
             </div>
+
 
             {/* Apellido */}
             <div className="mb-4">
-              <label className={`${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>Apellido</label>
+              <label className="block text-gray-700">Apellido</label>
               <input
                 type="text"
                 placeholder="Apellido"
                 value={apellido}
                 onChange={(e) => setApellido(e.target.value)}
-                className={`w-full p-2 rounded-lg border ${theme === 'dark' ? 'bg-gray-700 border-gray-600 text-gray-200' : 'bg-white border-gray-300 text-gray-800'}`}
+                className="w-full border border-gray-300 p-2 rounded-lg"
               />
+              {apellido && !validarNombreApellido(apellido) && (
+                <p className="text-red-500 text-sm">
+                  El apellido debe tener más de 3 caracteres y solo contener letras.
+                </p>
+              )}
             </div>
 
             {/* Correo Electrónico */}
@@ -351,7 +377,8 @@ function RegisterPage() {
                 placeholder="Teléfono"
                 value={telefono}
                 onChange={(e) => setTelefono(e.target.value)}
-                className={`w-full p-2 rounded-lg border ${theme === 'dark' ? 'bg-gray-700 border-gray-600 text-gray-200' : 'bg-white border-gray-300 text-gray-800'}`}
+                className={`w-full p-2 rounded-lg border
+                  ${theme === 'dark' ? 'bg-gray-700 border-gray-600 text-gray-200' : 'bg-white border-gray-300 text-gray-800'}`}
                 pattern="[0-9]{10}" // Solo números y exactamente 10 dígitos
                 maxLength="10" // Máximo 10 caracteres
                 onInput={(e) => {
@@ -497,7 +524,7 @@ function RegisterPage() {
             </div>
             <div className="mb-4">
               <ReCAPTCHA
-                sitekey="6Le0l2kqAAAAACYJHrkCQ6HwJrxjWSuj9e6NxIvY"
+                sitekey="6Le-KvoqAAAAAKiAQgWTsJHIj_reB0W2z7tudcCz"
                 onChange={handleRecaptchaChange}
               />
             </div>

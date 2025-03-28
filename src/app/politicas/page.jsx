@@ -23,7 +23,7 @@ function PoliticasPage() {
   }, []);
 
   return (
-    <div className={`flex items-center justify-center min-h-screen ${theme === 'dark' ? 'bg-gray-900 text-gray-100' : 'bg-gray-100 text-gray-900'}`}>
+    <div className={`flex items-center justify-center min-h-screen mt-36 ${theme === 'dark' ? 'bg-gray-900 text-gray-100' : 'bg-gray-100 text-gray-900'}`}>
       {politica ? (
         <div className={`${theme === 'dark' ? 'bg-gray-800 text-gray-100' : 'bg-white text-gray-900'} shadow-md rounded-lg p-8 max-w-3xl w-full`}>
           {/* Título de la política */}
@@ -48,6 +48,8 @@ function PoliticasPage() {
         <p className={`text-center ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>Cargando política de privacidad...</p>
       )}
     </div>
+    
+    
   );
 }
 

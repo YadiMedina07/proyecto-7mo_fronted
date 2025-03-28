@@ -28,27 +28,21 @@ function Footer() {
         {/* Enlaces de secciones */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-sm py-8 text-center">
           <div>
-            <h3 className="font-bold mb-4 text-lg">ENCUENTRA</h3>
+            <h3 className="font-bold mb-4 text-lg">ENCUENTRANOS</h3>
             <ul className="space-y-2">
               <li>
-                <Link href="/ubicaciones">
+                <Link href="/ubicacion">
                   <p className="hover:text-black text-lg">Ubicacion</p>
                 </Link>
               </li>
               <li>
-                <Link href="/marca">
+                <Link href="/contactos">
                   <p className="hover:text-black text-lg">
-                    Busca por tamaño
+                    Contactanos
                   </p>
                 </Link>
               </li>
-              <li>
-                <Link href="/modelo">
-                  <p className="hover:text-black text-lg">
-                    Busca por sabor
-                  </p>
-                </Link>
-              </li>
+
             </ul>
           </div>
 
@@ -86,11 +80,6 @@ function Footer() {
                   <p className="hover:text-black text-lg">
                     Facturación Electrónica
                   </p>
-                </Link>
-              </li>
-              <li>
-                <Link href="/contactos">
-                  <p className="hover:text-black text-lg">Contáctanos</p>
                 </Link>
               </li>
               <li>

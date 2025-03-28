@@ -17,6 +17,8 @@ const LoginPage = () => {
 
     try {
       const result = await login(email, password);
+      // Simular un error manualmente
+  //throw new Error("Error simulado");
       if (result.success) {
         setMessage('Inicio de sesión exitoso');
         router.push('/');
@@ -25,7 +27,8 @@ const LoginPage = () => {
       }
     } catch (error) {
       console.error('Error en el inicio de sesión:', error);
-      setMessage('Error interno del servidor');
+      // Redirigir a la página de error 500
+      router.push('/error500');
     }
   };
 
@@ -37,11 +40,11 @@ const LoginPage = () => {
             <p className={`font-bold mb-6 block ${theme === 'dark' ? 'text-blue-300 hover:text-blue-600' : 'text-pink-700'}`}>&larr; Atrás</p>
           </Link>
         </div>
-        
+
         <h2 className="text-2xl font-bold mb-8 text-center">Inicia Sesión</h2>
-        
+
         {message && <p className="text-center text-red-500 mb-4">{message}</p>}
-        
+
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label className={`block ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>Correo electrónico</label>
@@ -53,7 +56,7 @@ const LoginPage = () => {
               className={`w-full p-2 rounded-lg border ${theme === 'dark' ? 'bg-gray-700 border-gray-600 text-gray-200' : 'bg-white border-gray-300 text-gray-800'}`}
             />
           </div>
-          
+
           <div className="mb-4">
             <label className={`block ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>Contraseña</label>
             <input
@@ -64,11 +67,11 @@ const LoginPage = () => {
               className={`w-full p-2 rounded-lg border ${theme === 'dark' ? 'bg-gray-700 border-gray-600 text-gray-200' : 'bg-white border-gray-300 text-gray-800'}`}
             />
           </div>
-          
+
           <button
             type="submit"
             className="w-full py-2 px-4 rounded-lg bg-pink-600 hover:bg-pink-500"
-            
+
           >
             Iniciar Sesión
           </button>

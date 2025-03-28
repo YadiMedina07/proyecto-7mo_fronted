@@ -15,6 +15,7 @@ import { FiSearch } from "react-icons/fi";
 import { useLogo } from "../context/LogoContext";
 import { useAuth } from "../context/authContext"; // Importa el contexto de autenticación
 import { useRouter } from "next/navigation"; // Importa el hook de useRouter para la redirección
+import { motion } from "framer-motion"; // Para transiciones suaves
 
 function Navbar() {
   const { isAuthenticated, user, logout, theme, toggleTheme } = useAuth();
@@ -50,7 +51,6 @@ function Navbar() {
     router.push("/");
   };
 
-  if (!isMounted) return null;
 
   return (
     <nav
@@ -58,26 +58,47 @@ function Navbar() {
         } fixed top-0 w-full z-50 pb-4 rounded-lg`}
     >
       <div
-        className={`bg-gradient-to-r ${theme === "dark" ? "from-gray-800 to-gray-900 text-gray-200" : "from-pink-500 to-pink-800 text-black"
+        className={`overflow-hidden whitespace-nowrap bg-gradient-to-r ${theme === "dark"
+          ? "from-gray-800 to-gray-900 text-gray-200"
+          : "from-pink-500 to-pink-800 text-black"
           } py-1 text-center font-semibold`}
       >
-        Aprovecha Envío Gratis!!!!!! Compra ahora y obtén envíos gratis hasta el 31 de Diciembre
+        <motion.span
+          animate={{
+            x: ["100%", "-100%"], // Desplazamiento de derecha a izquierda
+            opacity: [1, 0.7, 1], // Parpadeo suave
+          }}
+          transition={{
+            duration: 10, // Velocidad del desplazamiento
+            repeat: Infinity, // Animación continua
+            ease: "linear", // Movimiento constante sin pausas
+          }}
+          className="inline-block"
+        >
+          Aprovecha Envío Gratis!!!!!! Compra ahora y obtén envíos gratis hasta el 31 de Diciembre
+        </motion.span>
       </div>
-      <div className="container mx-auto flex justify-between items-center py-2">
+
+      <div className="container mx-auto flex justify-between items-center ">
         <div className="flex items-center">
           <Link href="/" className="flex items-center">
             <Image
               src={logoUrl || "/fallback-logo.png"}
               alt="Corazon Logo"
               width={100}
-              height={40}
+              height={100}
               className="object-contain"
             />
           </Link>
         </div>
 
-        <div className="flex items-center space-x-4">
-          <Link href="/acercade">
+        <div className="flex items-center space-x-10">
+          <Link href="/">
+            <span className={`cursor-pointer ${theme === "dark" ? "text-gray-200 hover:text-pink-400" : "text-gray-700 hover:text-pink-700"}`}>
+              Inicio
+            </span>
+          </Link>
+          <Link href="/nosotros">
             <span className={`cursor-pointer ${theme === "dark" ? "text-gray-200 hover:text-pink-400" : "text-gray-700 hover:text-pink-700"}`}>
               Acerca de nosotros
             </span>
@@ -87,28 +108,18 @@ function Navbar() {
               Servicios
             </span>
           </Link>
-          <Link href="/contactos">
+          <Link href="/producto">
             <span className={`cursor-pointer ${theme === "dark" ? "text-gray-200 hover:text-pink-400" : "text-gray-700 hover:text-pink-700"}`}>
-              Contactanos
-            </span>
-          </Link>
-          <Link href="/politicas">
-            <span className={`cursor-pointer ${theme === "dark" ? "text-gray-200 hover:text-pink-400" : "text-gray-700 hover:text-pink-700"}`}>
-              Politicas
-            </span>
-          </Link>
-          <Link href="/catalogo">
-            <span className={`cursor-pointer ${theme === "dark" ? "text-gray-200 hover:text-pink-400" : "text-gray-700 hover:text-pink-700"}`}>
-              Catalogo
+              Producto
             </span>
           </Link>
         </div>
 
 
         <div className="flex items-center space-x-4">
-          <Link href="/cart" className={`flex items-center space-x-2 ${theme === "dark" ? "text-gray-200 hover:text-pink-400" : "text-gray-700 hover:text-pink-700"}`}>
+          <Link href="/carrito" className={`flex items-center space-x-2 ${theme === "dark" ? "text-gray-200 hover:text-pink-400" : "text-gray-700 hover:text-pink-700"}`}>
             <FaShoppingCart className="w-6 h-6 cursor-pointer" />
-            <span>Carrito</span>
+            <span>compras</span>
           </Link>
 
           <div className="relative" ref={dropdownRef}>
@@ -178,6 +189,36 @@ function Navbar() {
                                 Gestión de Usuarios
                               </p>
                             </Link>
+                            <Link href="/adminProductos">
+                              <p
+                                className={`mt-2 ${theme === "dark"
+                                  ? "hover:text-yellow-400"
+                                  : "hover:text-green-700"
+                                  }`}
+                              >
+                                Administrar productos
+                              </p>
+                            </Link>
+                            <Link href="/adminVerproductos">
+                              <p
+                                className={`mt-2 ${theme === "dark"
+                                  ? "hover:text-yellow-400"
+                                  : "hover:text-green-700"
+                                  }`}
+                              >
+                                Ver productos
+                              </p>
+                            </Link>
+                            <Link href="/adminVentas">
+                              <p
+                                className={`mt-2 ${theme === "dark"
+                                  ? "hover:text-yellow-400"
+                                  : "hover:text-green-700"
+                                  }`}
+                              >
+                                Administrar ventas
+                              </p>
+                            </Link>
                           </div>
                         )}
                         {user?.role === "admin" && (
@@ -231,8 +272,8 @@ function Navbar() {
                                 <Link href="/adminLogo">
                                   <p
                                     className={`mt-2 ${theme === "dark"
-                                        ? "hover:text-yellow-400"
-                                        : "hover:text-green-700"
+                                      ? "hover:text-yellow-400"
+                                      : "hover:text-green-700"
                                       }`}
                                   >
                                     Administrar Logo
