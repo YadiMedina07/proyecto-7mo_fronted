@@ -1,5 +1,6 @@
 "use client";
 
+import { Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useAuth } from "../../../context/authContext";
 import Breadcrumbs from "../../../components/Breadcrumbs";
@@ -33,7 +34,8 @@ const dataSabores = {
   ],
 };
 
-export default function ProyeccionPage() {
+// Componente que contiene toda la lógica de la página
+function ProyeccionPageContent() {
   const { theme } = useAuth();
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -53,7 +55,7 @@ export default function ProyeccionPage() {
 
   // Cuando el usuario presione el botón "Proyección" en la tabla
   const handleProyeccion = (item) => {
-    // Redirigir a la vista de detalle, pasando todos los datos necesarios por query
+    // Redirigir a la vista de detalle, pasando los datos necesarios por query
     router.push(
       `/inventario/proyeccion/detalle?sabor=${sabor}&tamano=${item.tamano}&precio=${item.precio}&imageUrl=${item.imageUrl}`
     );
@@ -116,3 +118,11 @@ export default function ProyeccionPage() {
   );
 }
 
+// Componente wrapper que envuelve el contenido en Suspense
+export default function ProyeccionPage() {
+  return (
+    <Suspense fallback={<div>Cargando...</div>}>
+      <ProyeccionPageContent />
+    </Suspense>
+  );
+}
