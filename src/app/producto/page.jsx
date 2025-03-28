@@ -198,7 +198,7 @@ function ProductosPage() {
                     <h2 className="text-xl font-bold mb-2">{producto.name}</h2>
                     <p className="text-sm mb-2">{producto.description}</p>
                     <p className="text-lg font-bold">${producto.precio && producto.precio.toFixed(2)}</p>
-                    <p className="text-sm">Tamaño: {producto.tamano}</p>
+                    <p className="text-sm">Tamaño: {producto.tamano} ml</p>
                     <div className="flex justify-between mt-4">
                       <button
                         onClick={() => handleComprar(producto)}

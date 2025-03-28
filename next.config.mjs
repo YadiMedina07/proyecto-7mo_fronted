@@ -6,7 +6,7 @@ const nextConfig = {
   
   // Evita que se envíe "X-Powered-By: Next.js"
   poweredByHeader: false,
-
+  
   async headers() {
     return [
       {

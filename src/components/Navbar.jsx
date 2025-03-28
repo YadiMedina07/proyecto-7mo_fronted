@@ -219,6 +219,16 @@ function Navbar() {
                                 Administrar ventas
                               </p>
                             </Link>
+                            <Link href="/inventario">
+                              <p
+                                className={`mt-2 ${theme === "dark"
+                                  ? "hover:text-yellow-400"
+                                  : "hover:text-green-700"
+                                  }`}
+                              >
+                                Administrar inventario
+                              </p>
+                            </Link>
                           </div>
                         )}
                         {user?.role === "admin" && (
