@@ -1,9 +1,17 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { useAuth } from "../../../../context/authContext";
 import Breadcrumbs from "../../../../components/Breadcrumbs";
+
+export default function DetalleProyeccionPage() {
+  return (
+    <Suspense fallback={<div>Cargando...</div>}>
+      <DetalleProyeccionPage />
+    </Suspense>
+  );
+}
 
 // Importar Chart y Bar de react-chartjs-2
 import {
