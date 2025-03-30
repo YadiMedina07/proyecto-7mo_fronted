@@ -524,7 +524,7 @@ function RegisterPage() {
             </div>
             <div className="mb-4">
               <ReCAPTCHA
-                sitekey="6Le-KvoqAAAAAKiAQgWTsJHIj_reB0W2z7tudcCz"
+                sitekey="6Le0l2kqAAAAACYJHrkCQ6HwJrxjWSuj9e6NxIvY"
                 onChange={handleRecaptchaChange}
               />
             </div>
