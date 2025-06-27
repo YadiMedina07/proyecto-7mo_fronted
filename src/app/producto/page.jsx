@@ -67,7 +67,7 @@ function ProductosPage() {
   // Función para agregar el producto al carrito y redirigir a la página del carrito
   const handleComprar = async (producto) => {
     try {
-      const response = await fetch(`${CONFIGURACIONES.BASEURL2}/productos/carrito`, {
+      const response = await fetch(`${CONFIGURACIONES.BASEURL2}/carrito/agregar`, {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
@@ -201,13 +201,13 @@ function ProductosPage() {
                     <p className="text-sm">Tamaño: {producto.tamano} ml</p>
                     <div className="flex justify-between mt-4">
                       <button
-                        onClick={() => handleComprar(producto)}
+                        onClick={() => alert("Funcionalidad de agregar al carrito en desarrollo")}
                         className="px-3 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition"
                       >
                         Comprar
                       </button>
                       <button
-                        onClick={() => alert("Funcionalidad de agregar al carrito en desarrollo")}
+                        onClick={() => handleComprar(producto)}
                         className="px-3 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
                       >
                         Agregar al Carrito

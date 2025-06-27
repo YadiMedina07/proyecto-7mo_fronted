@@ -209,16 +209,6 @@ function Navbar() {
                                 Ver productos
                               </p>
                             </Link>
-                            <Link href="/adminVentas">
-                              <p
-                                className={`mt-2 ${theme === "dark"
-                                  ? "hover:text-yellow-400"
-                                  : "hover:text-green-700"
-                                  }`}
-                              >
-                                Administrar ventas
-                              </p>
-                            </Link>
                             <Link href="/inventario">
                               <p
                                 className={`mt-2 ${theme === "dark"
@@ -227,6 +217,26 @@ function Navbar() {
                                   }`}
                               >
                                 Administrar inventario
+                              </p>
+                            </Link>
+                            <Link href="/adminPromociones">
+                              <p
+                                className={`mt-2 ${theme === "dark"
+                                  ? "hover:text-yellow-400"
+                                  : "hover:text-green-700"
+                                  }`}
+                              >
+                                Administrar promociones
+                              </p>
+                            </Link>
+                            <Link href="/adminPedidos">
+                              <p
+                                className={`mt-2 ${theme === "dark"
+                                  ? "hover:text-yellow-400"
+                                  : "hover:text-green-700"
+                                  }`}
+                              >
+                                Administrar pedidos
                               </p>
                             </Link>
                           </div>
