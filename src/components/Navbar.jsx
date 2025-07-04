@@ -169,6 +169,16 @@ function Navbar() {
                         Ver perfil
                       </p>
                     </Link>
+                    <Link href="/misPedidos">
+                      <p className={`mt-2 font-semibold ${theme === "dark" ? "hover:text-pink-400" : "hover:text-pink-700"}`}>
+                        Ver pedidos
+                      </p>
+                    </Link>
+                    <Link href="/historialPedido">
+                      <p className={`mt-2 font-semibold ${theme === "dark" ? "hover:text-pink-400" : "hover:text-pink-700"}`}>
+                        Ver historial pedidos
+                      </p>
+                    </Link>
                     {user?.role === "admin" && (
                       <div className="mt-4">
                         <button
