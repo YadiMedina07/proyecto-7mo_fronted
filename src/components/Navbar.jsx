@@ -114,8 +114,6 @@ function Navbar() {
             </span>
           </Link>
         </div>
-
-
         <div className="flex items-center space-x-4">
           <Link href="/carrito" className={`flex items-center space-x-2 ${theme === "dark" ? "text-gray-200 hover:text-pink-400" : "text-gray-700 hover:text-pink-700"}`}>
             <FaShoppingCart className="w-6 h-6 cursor-pointer" />
@@ -178,6 +176,10 @@ function Navbar() {
                       <p className={`mt-2 font-semibold ${theme === "dark" ? "hover:text-pink-400" : "hover:text-pink-700"}`}>
                         Ver historial pedidos
                       </p>
+                    </Link>
+                    <Link href="/review">
+                      <p className={`mt-2 font-semibold ${theme === "dark" ? "hover:text-pink-400" : "hover:text-pink-700"}`}>
+                     Escribir reseña</p>
                     </Link>
                     {user?.role === "admin" && (
                       <div className="mt-4">

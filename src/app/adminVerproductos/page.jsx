@@ -23,6 +23,7 @@ function AdminProductListPage() {
     precio: "",
     sabor: "",
     tamano: "",
+    stock: "",
   });
   const [updateImages, setUpdateImages] = useState([]);
   const [updateRemoveOldImages, setUpdateRemoveOldImages] = useState(false);
@@ -95,6 +96,7 @@ function AdminProductListPage() {
       precio: product.precio,
       sabor: product.sabor,
       tamano: product.tamano,
+      stock: product.stock,
     });
     setUpdateImages([]);
     setUpdateRemoveOldImages(false);
@@ -123,6 +125,7 @@ function AdminProductListPage() {
     formData.append("precio", updateForm.precio);
     formData.append("sabor", updateForm.sabor);
     formData.append("tamano", updateForm.tamano);
+    formData.append("stock", updateForm.stock);
     formData.append("removeOldImages", updateRemoveOldImages);
     updateImages.forEach((file) => {
       formData.append("images", file);
@@ -157,11 +160,10 @@ function AdminProductListPage() {
     <div className={`container mx-auto py-8 pt-36 ${theme === "dark" ? "bg-gray-900 text-gray-100" : "bg-white text-gray-900"}`}>
       <h1 className="text-3xl font-bold text-center mb-8">Administrar Productos</h1>
       {message && (
-        <div className={`mb-4 p-4 rounded-lg text-center text-sm ${
-          messageType === "success"
+        <div className={`mb-4 p-4 rounded-lg text-center text-sm ${messageType === "success"
             ? "bg-green-100 text-green-700 border border-green-300"
             : "bg-red-100 text-red-700 border border-red-300"
-        }`}>
+          }`}>
           {message}
         </div>
       )}
@@ -184,6 +186,7 @@ function AdminProductListPage() {
                 <p className="text-gray-700 mb-2">Precio: ${product.precio.toFixed(2)}</p>
                 <p className="text-gray-700 mb-2">Sabor: {product.sabor}</p>
                 <p className="text-gray-700 mb-2">Tamaño: {product.tamano}</p>
+                <p className="text-gray-700 mb-2">Stock: {product.stock}</p>
                 <div className="flex justify-between mt-4">
                   <button
                     onClick={() => handleUpdate(product)}
@@ -207,7 +210,7 @@ function AdminProductListPage() {
       {/* Modal de actualización */}
       {showModal && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-          <div className={`bg-white rounded-lg p-6 w-full max-w-lg ${theme === "dark" ? "bg-gray-800 text-gray-100" : "bg-white text-gray-900"}`}>
+          <div className={`bg-white rounded-lg p-6 w-full max-w-lg max-h-[90vh]  overflow-y-auto  ${theme === "dark" ? "bg-gray-800 text-gray-100" : "bg-white text-gray-900"} `}>
             <h2 className="text-2xl font-bold mb-4">Editar Producto</h2>
             <form onSubmit={handleUpdateSubmit} className="space-y-4">
               <div>
@@ -261,6 +264,18 @@ function AdminProductListPage() {
                   value={updateForm.tamano}
                   onChange={handleUpdateFormChange}
                   className="w-full border p-2 rounded"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block mb-1">Stock</label>
+                <input
+                  type="number"
+                  name="stock"
+                  value={updateForm.stock}
+                  onChange={handleUpdateFormChange}
+                  className="w-full border p-2 rounded"
+                  min="0"
                   required
                 />
               </div>
