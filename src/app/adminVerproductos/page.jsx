@@ -267,7 +267,7 @@ function AdminProductListPage() {
                   required
                 />
               </div>
-              <div>
+              {/*<div>
                 <label className="block mb-1">Stock</label>
                 <input
                   type="number"
@@ -278,7 +278,7 @@ function AdminProductListPage() {
                   min="0"
                   required
                 />
-              </div>
+              </div>*/}
               <div>
                 <label className="block mb-1">Nuevas Imágenes</label>
                 <input
