@@ -293,6 +293,24 @@ function Navbar() {
                                 Grafico de Ventas
                               </p>
                             </Link>
+                            <Link href="/inventario">
+                              <p className={`mt-2 ${theme === "dark"
+                                ? "hover:text-pink-400"
+                                : "hover:text-pink-700"
+                                }`}
+                              >
+                                predicciones de produccion
+                              </p>
+                            </Link>
+                            <Link href="/adminContactos">
+                              <p className={`mt-2 ${theme === "dark"
+                                ? "hover:text-pink-400"
+                                : "hover:text-pink-700"
+                                }`}
+                              >
+                                responder preguntas
+                              </p>
+                            </Link>
                             {/* Añade aquí más enlaces de ventas si los necesitas */}
                           </div>
                         )}

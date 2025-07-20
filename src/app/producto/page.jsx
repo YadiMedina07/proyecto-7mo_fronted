@@ -41,33 +41,47 @@ export default function ProductosPage() {
     fetchProductos();
   }, []);
 
-  // Filtrado
+  // Filtrado con lógica mejorada
   const productosFiltrados = productos.filter((p) => {
-    const texto = busquedaGeneral.toLowerCase();
+    const texto = busquedaGeneral.trim().toLowerCase();
     const matchGeneral =
       p.name.toLowerCase().includes(texto) ||
       p.description.toLowerCase().includes(texto) ||
       p.sabor.toLowerCase().includes(texto);
-    const matchFlavor = !filtroFlavor || p.sabor === filtroFlavor;
-    const matchSize = !filtroSize || p.tamano === filtroSize;
-    const matchMin = !filtroPrecioMin || p.precio >= +filtroPrecioMin;
-    const matchMax = !filtroPrecioMax || p.precio <= +filtroPrecioMax;
+
+    const matchFlavor =
+      !filtroFlavor ||
+      p.sabor.toLowerCase() === filtroFlavor.toLowerCase();
+
+    const matchSize =
+      !filtroSize ||
+      p.tamano === Number(filtroSize);
+
+    const precio = Number(p.precio);
+    const min = filtroPrecioMin ? Number(filtroPrecioMin) : null;
+    const max = filtroPrecioMax ? Number(filtroPrecioMax) : null;
+    const matchMin = min === null || precio >= min;
+    const matchMax = max === null || precio <= max;
+
     return matchGeneral && matchFlavor && matchSize && matchMin && matchMax;
   });
 
   // Separar disponibles y agotados
   const disponibles = productosFiltrados.filter((p) => p.stock > 0);
-  const agotados   = productosFiltrados.filter((p) => p.stock === 0);
+  const agotados = productosFiltrados.filter((p) => p.stock === 0);
 
-  // Agregar al carrito
+  // Funciones de carrito y compra
   const handleAgregarAlCarrito = async (producto) => {
     try {
-      const res = await fetch(`${CONFIGURACIONES.BASEURL2}/carrito/agregar`, {
-        method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ productId: producto.id, cantidad: 1 }),
-      });
+      const res = await fetch(
+        `${CONFIGURACIONES.BASEURL2}/carrito/agregar`,
+        {
+          method: "POST",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ productId: producto.id, cantidad: 1 }),
+        }
+      );
       if (!res.ok) {
         const err = await res.json();
         throw new Error(err.message || "Error al agregar al carrito");
@@ -78,16 +92,19 @@ export default function ProductosPage() {
     }
   };
 
-  // Comprar directo: agrega al carrito y va a /pedido
   const handleComprarDirecto = async (producto) => {
     await handleAgregarAlCarrito(producto);
     router.push("/pedidos");
   };
 
   return (
-    <div className={`container mx-auto py-8 pt-36 ml-4 mr-4 ${
-      theme === "dark" ? "bg-gray-900 text-gray-100" : "bg-white text-gray-900"
-    }`}>
+    <div
+      className={`container mx-auto py-8 pt-36 px-4 ${
+        theme === "dark"
+          ? "bg-gray-900 text-gray-100"
+          : "bg-white text-gray-900"
+      }`}
+    >
       <Breadcrumbs
         pages={[
           { name: "Home", path: "/" },
@@ -112,6 +129,7 @@ export default function ProductosPage() {
         {/* Filtros */}
         <div className="p-6 shadow rounded-lg">
           <h2 className="font-semibold mb-4">Filtrar por:</h2>
+
           <label className="block mb-2">Sabor</label>
           <select
             className="w-full p-2 border rounded mb-4"
@@ -119,21 +137,39 @@ export default function ProductosPage() {
             onChange={(e) => setFiltroFlavor(e.target.value)}
           >
             <option value="">Todos</option>
-            <option value="Café">Café</option>
+            <option value="Cafe">Café</option>
+            <option value="Capulin">Capulín</option>
+            <option value="Mandarina">Mandarina</option>
+            <option value="Naranja">Naranja</option>
             <option value="Jobo">Jobo</option>
             <option value="Fresa">Fresa</option>
+            <option value="Arandano">Arándano</option>
+            <option value="Tamarindo">Tamarindo</option>
+            <option value="Lichi">Lichi</option>
+            <option value="Maracuya">Maracuyá</option>
+            <option value="Coco">Coco</option>
+            <option value="Canela">Canela</option>
+            <option value="Zarzamora">Zarzamora</option>
+            <option value="Mango">Mango</option>
+            <option value="Guayaba">Guayaba</option>
+            <option value="Limon">Limón</option>
+            <option value="Jerez">Jerez</option>
+            <option value="Ciruela">Ciruela</option>
+            <option value="Piña/Maracuya">Piña/Maracuyá</option>
+            <option value="Naranja/Maracuya">Naranja/Maracuyá</option>
+            
           </select>
 
-          <label className="block mb-2">Tamaño</label>
+          <label className="block mb-2">Tamaño (ml)</label>
           <select
             className="w-full p-2 border rounded mb-4"
             value={filtroSize}
             onChange={(e) => setFiltroSize(e.target.value)}
           >
             <option value="">Todos</option>
-            <option value="250ml">250ml</option>
-            <option value="750ml">750ml</option>
-            <option value="1000ml">1000ml</option>
+            <option value="250">250</option>
+            <option value="750">750</option>
+            <option value="1000">1000</option>
           </select>
 
           <label className="block mb-2">Precio</label>
@@ -168,7 +204,7 @@ export default function ProductosPage() {
                 {disponibles.map((prod) => (
                   <div
                     key={prod.id}
-                    className="shadow rounded-lg overflow-hidden cursor-pointer"
+                    className="shadow rounded-lg overflow-hidden cursor-pointer hover:shadow-lg transition"
                     onClick={() => router.push(`/producto/${prod.id}`)}
                   >
                     {prod.imagenes?.[0] ? (
@@ -193,7 +229,7 @@ export default function ProductosPage() {
                             e.stopPropagation();
                             handleComprarDirecto(prod);
                           }}
-                          className="px-3 py-2 bg-green-600 text-white rounded hover:bg-green-500"
+                          className="px-3 py-2 bg-green-600 text-white rounded hover:bg-green-500 transition"
                         >
                           Comprar
                         </button>
@@ -202,7 +238,7 @@ export default function ProductosPage() {
                             e.stopPropagation();
                             handleAgregarAlCarrito(prod);
                           }}
-                          className="px-3 py-2 bg-blue-600 text-white rounded hover:bg-blue-500"
+                          className="px-3 py-2 bg-blue-600 text-white rounded hover:bg-blue-500 transition"
                         >
                           Agregar al Carrito
                         </button>
