@@ -5,14 +5,30 @@ import { useRouter } from "next/navigation";
 import { CONFIGURACIONES } from "../config/config";
 import { useAuth } from "../../context/authContext";
 import {
-  FiUser,
-  FiMail,
-  FiPhone,
-  FiCalendar,
-  FiKey,
-  FiShield,
-  FiClock,
-} from "react-icons/fi";
+  User,
+  Phone,
+  Calendar,
+  Shield,
+  Clock,
+  Key,
+  Edit,
+  Save,
+  X,
+  CheckCircle,
+  XCircle,
+  AlertCircle,
+  UserCheck,
+} from "lucide-react";
+
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Separator } from "@/components/ui/separator";
 
 function UserProfile() {
   const [userData, setUserData] = useState(null);
@@ -26,13 +42,10 @@ function UserProfile() {
   useEffect(() => {
     async function fetchProfile() {
       try {
-        const response = await fetch(
-          `${CONFIGURACIONES.BASEURL2}/auth/profile`,
-          {
-            method: "GET",
-            credentials: "include",
-          }
-        );
+        const response = await fetch(`${CONFIGURACIONES.BASEURL2}/auth/profile`, {
+          method: "GET",
+          credentials: "include",
+        });
         const data = await response.json();
         if (response.ok) {
           setUserData(data);
@@ -64,15 +77,12 @@ function UserProfile() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch(
-        `${CONFIGURACIONES.BASEURL2}/auth/update-profile`,
-        {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-          body: JSON.stringify(formData),
-        }
-      );
+      const response = await fetch(`${CONFIGURACIONES.BASEURL2}/auth/update-profile`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(formData),
+      });
       const data = await response.json();
       if (response.ok) {
         setUserData(data);
@@ -89,10 +99,38 @@ function UserProfile() {
   if (loading) {
     return (
       <div
-        className={`min-h-screen flex items-center justify-center ${theme === "dark" ? "bg-gray-900" : "bg-gray-50"
-          }`}
+        className={`min-h-screen py-8 px-4 ${
+          theme === "dark" ? "bg-gray-900 text-gray-100" : "bg-gray-50 text-gray-900"
+        }`}
       >
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-pink-500"></div>
+        <div className="container mx-auto max-w-4xl space-y-6">
+          <Skeleton className="h-8 w-48" />
+          <Card>
+            <CardHeader>
+              <div className="flex items-center space-x-4">
+                <Skeleton className="h-20 w-20 rounded-full" />
+                <div className="space-y-2">
+                  <Skeleton className="h-6 w-48" />
+                  <Skeleton className="h-4 w-32" />
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {[...Array(4)].map((_, i) => (
+                  <div key={i} className="space-y-3">
+                    <Skeleton className="h-5 w-32" />
+                    <div className="space-y-2">
+                      <Skeleton className="h-4 w-full" />
+                      <Skeleton className="h-4 w-3/4" />
+                      <Skeleton className="h-4 w-1/2" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     );
   }
@@ -100,14 +138,14 @@ function UserProfile() {
   if (error) {
     return (
       <div
-        className={`min-h-screen flex items-center justify-center ${theme === "dark"
-            ? "bg-gray-900 text-gray-100"
-            : "bg-white text-gray-900"
-          }`}
+        className={`min-h-screen flex items-center justify-center px-4 ${
+          theme === "dark" ? "bg-gray-900 text-gray-100" : "bg-gray-50 text-gray-900"
+        }`}
       >
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded max-w-md">
-          <p>{error}</p>
-        </div>
+        <Alert variant="destructive" className="max-w-md">
+          <AlertCircle className="h-4 w-4 text-pink-600" />
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
       </div>
     );
   }
@@ -115,265 +153,320 @@ function UserProfile() {
   if (!userData) {
     return (
       <div
-        className={`min-h-screen flex items-center justify-center ${theme === "dark"
-            ? "bg-gray-900 text-gray-100"
-            : "bg-white text-gray-900"
-          }`}
+        className={`min-h-screen flex items-center justify-center px-4 ${
+          theme === "dark" ? "bg-gray-900 text-gray-100" : "bg-gray-50 text-gray-900"
+        }`}
       >
-        <p>No hay datos de usuario</p>
+        <Alert>
+          <AlertCircle className="h-4 w-4 text-pink-600" />
+          <AlertDescription>No hay datos de usuario disponibles</AlertDescription>
+        </Alert>
       </div>
     );
   }
 
+  const getInitials = (name, lastname) =>
+    `${name?.charAt(0) || ""}${lastname?.charAt(0) || ""}`.toUpperCase();
+
   return (
     <div
-      className={`min-h-screen transition-colors duration-300 ${theme === "dark" ? "bg-gray-900 text-gray-100" : "bg-gray-50 text-gray-900"
-        }`}
+      className={`min-h-screen py-8 px-4 transition-colors duration-300 ${
+        theme === "dark" ? "bg-gray-900 text-gray-100" : "bg-gray-50 text-gray-900"
+      }`}
     >
-      <div className="container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold flex items-center mb-6">
-          <FiUser className="mr-2" /> Mi Perfil
-        </h1>
+      <div className="container mx-auto max-w-4xl">
+        {/* Header */}
+        <div className="flex items-center gap-3 mb-8">
+          <User className="h-8 w-8 text-pink-600" />
+          <h1 className="text-3xl font-bold text-pink-600">Mi Perfil</h1>
+        </div>
 
-        <div
-          className={`rounded-lg shadow-xl overflow-hidden ${theme === "dark" ? "bg-gray-800" : "bg-white"
-            }`}
-        >
-        <div
-            className={`p-6 ${theme === "dark" ? "bg-gray-700" : "bg-white"} text-black`}
+        <Card className="overflow-hidden">
+          {/* Profile Header */}
+          <CardHeader
+            className={
+              theme === "dark"
+                ? "bg-gradient-to-r from-gray-800 to-gray-900"
+                : "bg-gradient-to-r from-gray-200 to-gray-400"
+            }
           >
-            <h2 className="text-2xl font-semibold">
-              {userData.name} {userData.lastname}
-            </h2>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-4">
+                <Avatar className="h-20 w-20 ring-4 ring-pink-500">
+                  <AvatarImage
+                    src={`/placeholder.svg?height=80&width=80&text=${getInitials(
+                      userData.name,
+                      userData.lastname
+                    )}`}
+                  />
+                  <AvatarFallback className="text-2xl font-bold">
+                    {getInitials(userData.name, userData.lastname)}
+                  </AvatarFallback>
+                </Avatar>
+                <div>
+                  <h2 className="text-2xl font-bold">{userData.name} {userData.lastname}</h2>
+                  <div className="flex items-center gap-2 mt-2">
+                    <UserCheck className="h-4 w-4 text-pink-600" />
+                    <span className="text-muted-foreground">Perfil de usuario</span>
+                  </div>
+                  <div className="flex items-center gap-2 mt-1">
+                    <Badge variant={userData.role === "admin" ? "default" : "secondary"}>
+                      {userData.role}
+                    </Badge>
+                    <Badge variant={userData.verified ? "default" : "destructive"}>
+                      {userData.verified ? "Verificado" : "No verificado"}
+                    </Badge>
+                  </div>
+                </div>
+              </div>
+              {!editMode && (
+                <Button
+                  onClick={() => setEditMode(true)}
+                  className="flex items-center gap-2 bg-pink-600 hover:bg-pink-500 text-white"
+                >
+                  <Edit className="h-4 w-4" />
+                  Editar Perfil
+                </Button>
+              )}
+            </div>
+          </CardHeader>
 
-            {/* Aquí centramos todo y agrandamos el icono */}
-            <p className="flex items-center justify-center mt-4 text-xl font-medium">
-              {/* Opción A: con prop size */}
-              <FiUser className="mr-2" size={32} />
-
-              {/* Opción B: con Tailwind */}
-              {/* <FiUser className="mr-2 text-3xl" /> */}
-
-              Perfil de usuario
-            </p>
-          </div>
-
-
-          <div className="p-6">
+          <CardContent className="p-6">
             {editMode ? (
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium mb-1 flex items-center">
-                    <FiUser className="mr-2" /> Nombre
-                  </label>
-                  <input
-                    type="text"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleInputChange}
-                    className={`w-full p-2 rounded border ${theme === "dark"
-                        ? "bg-gray-700 border-gray-600"
-                        : "bg-white border-gray-300"
-                      }`}
-                  />
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <Label htmlFor="name" className="flex items-center gap-2 text-pink-600">
+                      <User className="h-4 w-4 text-pink-600" />
+                      Nombre
+                    </Label>
+                    <Input id="name" name="name" value={formData.name} onChange={handleInputChange} />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="lastname" className="flex items-center gap-2 text-pink-600">
+                      <User className="h-4 w-4 text-pink-600" />
+                      Apellido
+                    </Label>
+                    <Input id="lastname" name="lastname" value={formData.lastname} onChange={handleInputChange} />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="telefono" className="flex items-center gap-2 text-pink-600">
+                      <Phone className="h-4 w-4 text-pink-600" />
+                      Teléfono
+                    </Label>
+                    <Input id="telefono" name="telefono" value={formData.telefono} onChange={handleInputChange} />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="fechadenacimiento" className="flex items-center gap-2 text-pink-600">
+                      <Calendar className="h-4 w-4 text-pink-600" />
+                      Fecha de Nacimiento
+                    </Label>
+                    <Input
+                      id="fechadenacimiento"
+                      name="fechadenacimiento"
+                      type="date"
+                      value={
+                        formData.fechadenacimiento
+                          ? new Date(formData.fechadenacimiento).toISOString().split("T")[0]
+                          : ""
+                      }
+                      onChange={handleInputChange}
+                    />
+                  </div>
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium mb-1 flex items-center">
-                    <FiUser className="mr-2" /> Apellido
-                  </label>
-                  <input
-                    type="text"
-                    name="lastname"
-                    value={formData.lastname}
-                    onChange={handleInputChange}
-                    className={`w-full p-2 rounded border ${theme === "dark"
-                        ? "bg-gray-700 border-gray-600"
-                        : "bg-white border-gray-300"
-                      }`}
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium mb-1 flex items-center">
-                    <FiPhone className="mr-2" /> Teléfono
-                  </label>
-                  <input
-                    type="text"
-                    name="telefono"
-                    value={formData.telefono}
-                    onChange={handleInputChange}
-                    className={`w-full p-2 rounded border ${theme === "dark"
-                        ? "bg-gray-700 border-gray-600"
-                        : "bg-white border-gray-300"
-                      }`}
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium mb-1 flex items-center">
-                    <FiCalendar className="mr-2" /> Fecha de Nacimiento
-                  </label>
-                  <input
-                    type="date"
-                    name="fechadenacimiento"
-                    value={
-                      formData.fechadenacimiento
-                        ? new Date(formData.fechadenacimiento)
-                          .toISOString()
-                          .split("T")[0]
-                        : ""
-                    }
-                    onChange={handleInputChange}
-                    className={`w-full p-2 rounded border ${theme === "dark"
-                        ? "bg-gray-700 border-gray-600"
-                        : "bg-white border-gray-300"
-                      }`}
-                  />
-                </div>
-
-                {/* Botones abajo del formulario */}
-                <div className="mt-4 flex justify-end space-x-2">
-                  <button
-                    type="submit"
-                    className="px-4 py-2 rounded bg-green-500 hover:bg-green-400 text-white"
-                  >
-                    Guardar
-                  </button>
-                  <button
+                <div className="flex justify-end gap-2 pt-4">
+                  <Button
                     type="button"
+                    variant="outline"
                     onClick={() => setEditMode(false)}
-                    className="px-4 py-2 rounded bg-red-500 hover:bg-red-400 text-white"
+                    className="flex items-center gap-2 border-pink-600 text-pink-600 hover:bg-pink-50"
                   >
+                    <X className="h-4 w-4" />
                     Cancelar
-                  </button>
+                  </Button>
+                  <Button type="submit" className="flex items-center gap-2 bg-pink-600 hover:bg-pink-500 text-white">
+                    <Save className="h-4 w-4" />
+                    Guardar Cambios
+                  </Button>
                 </div>
               </form>
             ) : (
-              <>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-4">
-                    <div>
-                      <h3 className="text-lg font-semibold mb-4 flex items-center">
-                        <FiUser className="mr-2" /> Información Personal
-                      </h3>
+              <div className="space-y-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  {/* Información Personal */}
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2 text-pink-600">
+                        <User className="h-5 w-5 text-pink-600" />
+                        Información Personal
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
                       <div className="space-y-3">
-                        <p>
-                          <span className="font-medium">Nombre:</span>{" "}
-                          {userData.name}
-                        </p>
-                        <p>
-                          <span className="font-medium">Apellido:</span>{" "}
-                          {userData.lastname}
-                        </p>
-                        <p>
-                          <span className="font-medium">Teléfono:</span>{" "}
-                          {userData.telefono || "No especificado"}
-                        </p>
-                        <p>
-                          <span className="font-medium">Fecha Nacimiento:</span>{" "}
-                          {new Date(userData.fechadenacimiento).toLocaleDateString()}
-                        </p>
-                      </div>
-                    </div>
-
-                    <div>
-                      <h3 className="text-lg font-semibold mb-4 flex items-center">
-                        <FiShield className="mr-2" /> Seguridad
-                      </h3>
-                      <div className="space-y-3">
-                        <p>
-                          <span className="font-medium">Pregunta Secreta:</span>{" "}
-                          {userData.preguntaSecreta}
-                        </p>
-                        <p>
-                          <span className="font-medium">Rol:</span>{" "}
-                          <span
-                            className={`px-2 py-1 rounded text-xs ${userData.role === "admin"
-                                ? "bg-purple-100 text-purple-800"
-                                : "bg-blue-100 text-blue-800"
-                              }`}
-                          >
-                            {userData.role}
-                          </span>
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="space-y-4">
-                    <div>
-                      <h3 className="text-lg font-semibold mb-4 flex items-center">
-                        <FiClock className="mr-2" /> Actividad
-                      </h3>
-                      <div className="space-y-3">
-                        <p>
-                          <span className="font-medium">Último inicio:</span>{" "}
-                          {userData.lastLogin
-                            ? new Date(userData.lastLogin).toLocaleString()
-                            : "Nunca"}
-                        </p>
-                        <p>
-                          <span className="font-medium">Cuenta creada:</span>{" "}
-                          {new Date(userData.createdAt).toLocaleDateString()}
-                        </p>
-                        <p>
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm font-medium text-muted-foreground">Nombre:</span>
+                          <span className="font-medium">{userData.name}</span>
+                        </div>
+                        <Separator />
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm font-medium text-muted-foreground">Apellido:</span>
+                          <span className="font-medium">{userData.lastname}</span>
+                        </div>
+                        <Separator />
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm font-medium text-muted-foreground">Teléfono:</span>
+                          <span className="font-medium">{userData.telefono || "No especificado"}</span>
+                        </div>
+                        <Separator />
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm font-medium text-muted-foreground">Fecha de Nacimiento:</span>
                           <span className="font-medium">
-                            Última actualización:
-                          </span>{" "}
-                          {new Date(userData.updatedAt).toLocaleDateString()}
-                        </p>
+                            {userData.fechadenacimiento
+                              ? new Date(userData.fechadenacimiento).toLocaleDateString()
+                              : "No especificada"}
+                          </span>
+                        </div>
                       </div>
-                    </div>
+                    </CardContent>
+                  </Card>
 
-                    <div>
-                      <h3 className="text-lg font-semibold mb-4 flex items-center">
-                        <FiKey className="mr-2" /> Estado de la Cuenta
-                      </h3>
+                  {/* Seguridad */}
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2 text-pink-600">
+                        <Shield className="h-5 w-5 text-pink-600" />
+                        Seguridad
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
                       <div className="space-y-3">
-                        <p>
-                          <span className="font-medium">Verificada:</span>{" "}
-                          <span
-                            className={`px-2 py-1 rounded text-xs ${userData.verified
-                                ? "bg-green-100 text-green-800"
-                                : "bg-yellow-100 text-yellow-800"
-                              }`}
-                          >
-                            {userData.verified ? "Sí" : "No"}
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm font-medium text-muted-foreground">Pregunta Secreta:</span>
+                          <span className="font-medium text-right max-w-[200px] truncate">
+                            {userData.preguntaSecreta}
                           </span>
-                        </p>
-                        <p>
-                          <span className="font-medium">Bloqueada:</span>{" "}
-                          <span
-                            className={`px-2 py-1 rounded text-xs ${userData.blocked
-                                ? "bg-red-100 text-red-800"
-                                : "bg-green-100 text-green-800"
-                              }`}
-                          >
-                            {userData.blocked ? "Sí" : "No"}
-                          </span>
-                        </p>
+                        </div>
+                        <Separator />
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm font-medium text-muted-foreground">Rol:</span>
+                          <Badge variant={userData.role === "admin" ? "default" : "secondary"}>
+                            {userData.role}
+                          </Badge>
+                        </div>
+                        <Separator />
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm font-medium text-muted-foreground">Email:</span>
+                          <span className="font-medium text-right max-w-[200px] truncate">{userData.email}</span>
+                        </div>
                       </div>
-                    </div>
-                  </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* Actividad */}
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2 text-pink-600">
+                        <Clock className="h-5 w-5 text-pink-600" />
+                        Actividad
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm font-medium text-muted-foreground">Último inicio:</span>
+                          <span className="font-medium text-right">
+                            {userData.lastLogin ? new Date(userData.lastLogin).toLocaleString() : "Nunca"}
+                          </span>
+                        </div>
+                        <Separator />
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm font-medium text-muted-foreground">Cuenta creada:</span>
+                          <span className="font-medium">{new Date(userData.createdAt).toLocaleDateString()}</span>
+                        </div>
+                        <Separator />
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm font-medium text-muted-foreground">Última actualización:</span>
+                          <span className="font-medium">{new Date(userData.updatedAt).toLocaleDateString()}</span>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* Estado de la Cuenta */}
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2 text-pink-600">
+                        <Key className="h-5 w-5 text-pink-600" />
+                        Estado de la Cuenta
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm font-medium text-muted-foreground">Verificada:</span>
+                          <div className="flex items-center gap-2">
+                            {userData.verified ? (
+                              <CheckCircle className="h-4 w-4 text-green-600" />
+                            ) : (
+                              <XCircle className="h-4 w-4 text-red-600" />
+                            )}
+                            <Badge variant={userData.verified ? "default" : "destructive"}>
+                              {userData.verified ? "Verificada" : "No verificada"}
+                            </Badge>
+                          </div>
+                        </div>
+                        <Separator />
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm font-medium text-muted-foreground">Bloqueada:</span>
+                          <div className="flex items-center gap-2">
+                            {userData.blocked ? (
+                              <XCircle className="h-4 w-4 text-red-600" />
+                            ) : (
+                              <CheckCircle className="h-4 w-4 text-green-600" />
+                            )}
+                            <Badge variant={userData.blocked ? "destructive" : "default"}>
+                              {userData.blocked ? "Bloqueada" : "Activa"}
+                            </Badge>
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
                 </div>
 
-                {/* Botón Editar abajo de la vista */}
-                <div className="mt-4 flex justify-end">
-                  <button
-                    onClick={() => setEditMode(true)}
-                    className={`px-4 py-2 rounded ${theme === "dark"
-                        ? "bg-gray-600 hover:bg-gray-500 text-white"
-                        : "bg-blue-600 hover:bg-blue-500 text-white"
-                      }`}
-                  >
-                    Editar
-                  </button>
-                </div>
-              </>
+                {/* Estadísticas adicionales */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-pink-600">Resumen de la Cuenta</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      <div className="text-center p-4 bg-muted/50 rounded-lg">
+                        <div className="text-2xl font-bold text-pink-600">
+                          {Math.floor((new Date() - new Date(userData.createdAt)) / (1000 * 60 * 60 * 24))}
+                        </div>
+                        <div className="text-sm text-muted-foreground">Días como miembro</div>
+                      </div>
+                      <div className="text-center p-4 bg-muted/50 rounded-lg">
+                        <div className="text-2xl font-bold text-pink-600">{userData.verified ? "✓" : "✗"}</div>
+                        <div className="text-sm text-muted-foreground">Verificación</div>
+                      </div>
+                      <div className="text-center p-4 bg-muted/50 rounded-lg">
+                        <div className="text-2xl font-bold text-pink-600">{userData.role === "admin" ? "👑" : "👤"}</div>
+                        <div className="text-sm text-muted-foreground">Tipo de cuenta</div>
+                      </div>
+                      <div className="text-center p-4 bg-muted/50 rounded-lg">
+                        <div className="text-2xl font-bold text-pink-600">{userData.blocked ? "🔒" : "🔓"}</div>
+                        <div className="text-sm text-muted-foreground">Estado</div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
             )}
-          </div>
-        </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
